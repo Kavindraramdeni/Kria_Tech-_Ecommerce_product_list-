@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kria-tech.example.com/sitemap.xml

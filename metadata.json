@@ -1,0 +1,6 @@
+{
+  "name": "Kria Tech - Custom Creations",
+  "description": "A one-stop studio for Signature Wall Decor, custom fabrication, personalized gifts, and educational materials with full e-commerce integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
