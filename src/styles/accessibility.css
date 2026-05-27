@@ -1,0 +1,47 @@
+@theme {
+  --focus-ring: 2px solid theme('colors.indigo.600');
+}
+
+@layer base {
+  /* Skip Link Styling */
+  .skip-link {
+    @apply absolute left-4 -top-20 z-[1000] bg-indigo-600 text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest transition-all;
+  }
+
+  .skip-link:focus {
+    @apply top-4;
+  }
+
+  /* Keyboard Focus Indicators */
+  :focus-visible {
+    @apply outline-none ring-2 ring-indigo-600 ring-offset-2 dark:ring-indigo-400 dark:ring-offset-gray-950;
+  }
+
+  /* Improved Touch Targets */
+  button, 
+  a, 
+  input[type="button"], 
+  input[type="submit"] {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* High Contrast mode helper */
+  @media (prefers-contrast: high) {
+    .text-gray-500, .text-gray-400 {
+      @apply text-gray-900 dark:text-gray-100;
+    }
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

@@ -1,0 +1,105 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+@import "./styles/accessibility.css";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* Matches header height */
+}
+
+body {
+  background-color: #f9fafb;
+  background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
+  overflow-x: hidden;
+  transition: background-color 0.3s ease;
+}
+
+html.dark body {
+  background-color: #030712;
+}
+
+/* Smooth Easing for all transitions */
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-scroll {
+  animation: scroll 60s linear infinite;
+}
+@keyframes fast-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-fast-scroll {
+  animation: fast-scroll 30s linear infinite;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* --- Transitions --- */
+.animate-on-load {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s var(--ease-out-expo) forwards;
+}
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  transition: opacity 1.2s var(--ease-out-expo), transform 1.2s var(--ease-out-expo);
+  will-change: transform, opacity;
+}
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Page Transition Classes */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms var(--ease-out-expo), transform 400ms var(--ease-out-expo);
+}
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms var(--ease-out-expo), transform 300ms var(--ease-out-expo);
+}
+
+/* --- Global Hover Animation --- */
+img { transition: transform 0.4s var(--ease-out-expo); }
+img:hover { transform: scale(1.05); }
+
+/* Animated Gradient Background */
+@keyframes bg-pan {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.animate-bg-pan {
+    background-size: 200% 200%;
+    animation: bg-pan 12s ease infinite;
+}
