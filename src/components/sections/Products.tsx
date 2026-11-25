@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -104,6 +104,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
   const [customLogo, setCustomLogo] = useState<File | null>(null);
   const [selectedShape, setSelectedShape] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   
   // Initialize attributes if available
   useEffect(() => {
@@ -123,14 +124,40 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
   useEffect(() => {
     if (!product) return;
     const previousOverflow = document.body.style.overflow;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const modal = modalRef.current;
+    const focusableSelector = 'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+    const getFocusable = () => Array.from(modal?.querySelectorAll<HTMLElement>(focusableSelector) || []);
+    getFocusable()[0]?.focus();
     document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = getFocusable();
+      if (!focusable.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
     };
   }, [product, onClose]);
 
@@ -203,6 +230,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
             role="dialog"
             aria-modal="true"
             aria-labelledby="product-dialog-title"
+            ref={modalRef}
             className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden max-w-5xl w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row relative z-[1001] max-h-[94dvh] sm:max-h-[90vh] rounded-2xl sm:rounded-[2rem]"
             onClick={(e) => e.stopPropagation()}
           >
@@ -247,6 +275,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                            key={option.label}
                            disabled={product.isSoldOut}
                            onClick={() => setSelectedVariants(prev => ({ ...prev, [variant.name]: option.label }))}
+                           aria-pressed={selectedVariants[variant.name] === option.label}
                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 cursor-pointer ${
                              selectedVariants[variant.name] === option.label
                              ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg'
@@ -273,6 +302,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                              <button
                                key={shape.label}
                                onClick={() => setSelectedShape(shape.label)}
+                               aria-pressed={selectedShape === shape.label}
                                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 cursor-pointer ${
                                  selectedShape === shape.label
                                  ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg'
@@ -297,6 +327,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                               <button
                                 key={size.label}
                                 onClick={() => setSelectedSize(size.label)}
+                                aria-pressed={selectedSize === size.label}
                                 className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 cursor-pointer ${
                                   selectedSize === size.label
                                   ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg'
