@@ -79,12 +79,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
           {product.title}
         </h3>
 
-        <div className="mt-3.5">
+        <div className="mt-3.5 space-y-2">
+          <div className="flex items-center justify-center gap-2 min-h-6">
+            <span className="text-sm sm:text-base font-black text-gray-900 dark:text-white">
+              {product.pricePrefix ? `${product.pricePrefix} ` : ''}₹{Number(product.price || 0).toLocaleString('en-IN')}{product.priceSuffix ? ` ${product.priceSuffix}` : ''}
+            </span>
+            {product.originalPrice && product.originalPrice > product.price && (
+              <span className="text-[10px] sm:text-xs text-gray-400 line-through">₹{Number(product.originalPrice).toLocaleString('en-IN')}</span>
+            )}
+          </div>
           <button
             type="button"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-black text-[10px] sm:text-xs uppercase tracking-widest py-3 px-4 rounded-2xl flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+            disabled={product.isSoldOut}
+            onClick={(event) => { event.stopPropagation(); onQuickView(product); }}
+            aria-label={product.isSoldOut ? `${product.title} is sold out` : `Customise and enquire about ${product.title}`}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-black text-[10px] sm:text-xs uppercase tracking-widest py-3 px-2 sm:px-4 rounded-2xl flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-[0.98] cursor-pointer disabled:cursor-not-allowed"
           >
-            Order Similar <MoveRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+            {product.isSoldOut ? 'Currently Unavailable' : 'Customise & Enquire'} <MoveRight size={14} />
           </button>
         </div>
       </div>
@@ -134,14 +145,35 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
 
   const handleWhatsAppBuy = () => {
     if (!product) return;
-    const message = `Hello Kria Tech! I'm interested in: *${product.title}*%0A*Category:* ${product.category}%0A*Variants:* ${Object.entries(selectedVariants).map(([k,v]) => `${k}:${v}`).join(', ') || 'Standard'}%0A*Shape:* ${selectedShape}%0A*Size:* ${selectedSize}%0A*Custom Text:* ${customText || 'None'}%0A*Estimated Price:* ₹${currentPrice}%0A%0APlease help me with the order!`;
-    window.open(`https://wa.me/919000376792?text=${message}`, '_blank');
+    const details = [
+      'Hello KRIA Tech! I would like a quote for this product.',
+      '',
+      `Product: ${product.title}`,
+      `Category: ${product.category || 'Custom creation'}`,
+      `Selected options: ${Object.entries(selectedVariants).map(([key, value]) => `${key}: ${value}`).join(', ') || 'Standard'}`,
+      `Shape: ${selectedShape || 'To be confirmed'}`,
+      `Size: ${selectedSize || 'To be confirmed'}`,
+      `Personalisation: ${customText.trim() || 'None'}`,
+      `Displayed starting price: ₹${Number(product.price || 0).toLocaleString('en-IN')}`,
+      `Estimated configuration price: ₹${Number(currentPrice).toLocaleString('en-IN')}`,
+      `Reference photo selected: ${customLogo ? customLogo.name : 'No photo selected'}`,
+      ...(customLogo ? ['I will attach my selected photo in this WhatsApp chat before confirming.'] : []),
+      '',
+      'Please confirm the final price, production time, delivery charges and available customisation options.'
+    ];
+    const whatsappUrl = `https://wa.me/919000376792?text=${encodeURIComponent(details.join('\n'))}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
   const handleHelpWhatsApp = () => {
     if (!product) return;
-    const message = `Hello Kria Tech! I need help with: *${product.title}*%0A*Category:* ${product.category}%0A%0ACan you provide more details?`;
-    window.open(`https://wa.me/919000376792?text=${message}`, '_blank');
+    const message = [
+      'Hello KRIA Tech! I have a question about this product:',
+      `Product: ${product.title}`,
+      `Category: ${product.category || 'Custom creation'}`,
+      'Please share details, customisation options and a final quote.'
+    ].join('\n');
+    window.open(`https://wa.me/919000376792?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   return createPortal(
@@ -598,7 +630,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
             </div>
             
             {searchResults.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {searchResults.map((product) => (
                   <motion.div 
                     key={product.id}
@@ -627,7 +659,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
         ) : activeCategory !== 'all' ? (
           <div className="space-y-8 animate-fade-in">
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {filteredProducts.map((product) => (
                   <motion.div 
                     key={product.id}
@@ -669,7 +701,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
               </div>
 
               {/* 3-Column highlight Grid */}
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {newInProducts.map((product) => (
                   <motion.div
                     key={product.id}
@@ -695,7 +727,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
                 <span className="h-1.5 w-1.5 bg-indigo-600 rounded-full"></span>
               </div>
               
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {wallDecorativesProducts.map((product) => (
                   <motion.div 
                     key={product.id}
@@ -720,7 +752,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
                 <span className="h-1.5 w-1.5 bg-indigo-600 rounded-full"></span>
               </div>
               
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {deskDecorativesProducts.map((product) => (
                   <motion.div 
                     key={product.id}
@@ -745,7 +777,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
                 <span className="h-1.5 w-1.5 bg-indigo-600 rounded-full"></span>
               </div>
               
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {accessoriesFashionProducts.map((product) => (
                   <motion.div 
                     key={product.id}
