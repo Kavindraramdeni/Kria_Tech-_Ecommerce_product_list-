@@ -109,7 +109,7 @@ function AppContent() {
     trackPageView(location.pathname);
   }, [location.pathname, location.hash]);
 
-  const showMainHeader = ['/', '/trending', '/catalogue', '/about-us'].includes(location.pathname);
+  const showMainHeader = ['/', '/trending', '/catalogue', '/about-us', '/custom-signs', '/personalized-gifts', '/educational-kids', '/signature-wall-decor'].includes(location.pathname);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-900 dark:selection:text-indigo-100 transition-colors duration-300">
