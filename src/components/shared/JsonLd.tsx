@@ -14,26 +14,15 @@ export const JsonLd: React.FC<JsonLdProps> = ({ data }) => (
 export const getOrganizationSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
-  name: 'Kria Tech',
+  '@id': 'https://kria-tech-ecommerce.vercel.app/#organization',
+  name: 'KRIA Tech',
   image: 'https://kria-tech-ecommerce.vercel.app/images/trending/project-1.jpg',
-  '@id': '',
-  url: 'https://kria-tech.example.com',
-  telephone: '+91 1234567890',
+  url: 'https://kria-tech-ecommerce.vercel.app',
+  telephone: '+919000376792',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '123 Maker Street',
-    addressLocality: 'Mumbai',
-    postalCode: '400001',
+    addressLocality: 'Hyderabad',
+    addressRegion: 'Telangana',
     addressCountry: 'IN',
   },
-  openingHoursSpecification: {
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-    opens: '09:00',
-    closes: '19:00',
-  },
-  sameAs: [
-    'https://instagram.com/kriatech',
-    'https://twitter.com/kriatech',
-  ],
 });
