@@ -460,7 +460,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
     },
     { 
       label: "Key Chains", 
-      imageSrc: "/images/mdf-arts/nature-trio.jpg", 
+      imageSrc: "/images/gallery/gallery-4.jpg", 
       targetId: "modular-fashion" 
     },
     { 
