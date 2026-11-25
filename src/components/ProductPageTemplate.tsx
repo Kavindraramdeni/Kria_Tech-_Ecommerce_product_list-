@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, ArrowRight, X, Camera, ShoppingCart, Check, Eye, HelpCircle, MessageCircle } from 'lucide-react';
@@ -31,6 +31,7 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [customText, setCustomText] = useState("");
   const [addedProducts, setAddedProducts] = useState<Record<string, boolean>>({});
+  const productDialogRef = useRef<HTMLDivElement>(null);
   const { addToCart } = useECommerce();
 
   useEffect(() => {
@@ -42,11 +43,42 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
 
   useEffect(() => {
     if (!quickViewProduct) return;
+    const previousOverflow = document.body.style.overflow;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const dialog = productDialogRef.current;
+    const selector = 'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+    const getFocusable = () => Array.from(dialog?.querySelectorAll<HTMLElement>(selector) || []);
+    getFocusable()[0]?.focus();
+    document.body.style.overflow = 'hidden';
+
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setQuickViewProduct(null);
+      if (event.key === 'Escape') {
+        setQuickViewProduct(null);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = getFocusable();
+      if (!focusable.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
+
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
+    };
   }, [quickViewProduct]);
 
   const categories = React.useMemo(() => {
@@ -327,6 +359,8 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                       role="dialog"
                       aria-modal="true"
                       aria-labelledby="category-product-dialog-title"
+                      ref={productDialogRef}
+                      tabIndex={-1}
                       className="relative max-w-5xl w-full max-h-[94dvh] sm:max-h-[90vh] bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10"
                       onClick={(e) => e.stopPropagation()}
                   >
