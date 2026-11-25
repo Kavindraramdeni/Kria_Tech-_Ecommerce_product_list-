@@ -15,7 +15,7 @@ export const getOrganizationSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'Kria Tech',
-  image: '/images/hero/bg.jpg',
+  image: 'https://kria-tech-ecommerce.vercel.app/images/trending/project-1.jpg',
   '@id': '',
   url: 'https://kria-tech.example.com',
   telephone: '+91 1234567890',
