@@ -230,6 +230,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
             {user && (
               <button
                  onClick={() => { onNavigate('orders'); setIsOpen(false); }}
+                 aria-label={`View orders and notifications, ${unreadCount} unread`}
                  className="relative p-2 text-indigo-600 dark:text-indigo-400"
               >
                   <Bell size={24} />
