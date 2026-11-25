@@ -6,28 +6,28 @@ import { Gallery } from './Gallery';
 import { WhatWeDo } from './WhatWeDo';
 
 const images = [
-    { src: '/images/about/workshop-1.jpg', alt: 'Warehouse with materials and equipment' },
-    { src: '/images/about/laser-machine.jpg', alt: 'CO2 Laser cutting machine in action' },
-    { src: '/images/about/creative-setup.jpg', alt: 'Behind the scenes setup of a creative project' }
+    { src: '/images/gallery/gallery-1.jpg', alt: 'Warehouse with materials and equipment' },
+    { src: '/images/led-decor/commercial-box.jpg', alt: 'CO2 Laser cutting machine in action' },
+    { src: '/images/services/personalized-gifts.jpg', alt: 'Behind the scenes setup of a creative project' }
 ];
 
 const collections = [
   {
     title: "The Spiritual Collection",
     subtitle: "Divine designs inspired by Hindu gods. Bring spirituality and positivity into your home.",
-    image: "/images/collections/spiritual.jpg",
+    image: "/images/gallery/gallery-7.jpg",
     items: ["Om LED Wall Decor", "Shiva MDF Silhouette", "Ganesha 3D Art"]
   },
   {
     title: "The Sports Arena",
     subtitle: "Celebrate your icons with precision-cut detailing and flawless finishing.",
-    image: "/images/collections/sports.jpg",
+    image: "/images/mdf-arts/dhoni-7.jpg",
     items: ["MS Dhoni Thala #7", "Virat Kohli #18", "IPL Team Logos"]
   },
   {
     title: "Automotive Passion",
     subtitle: "For car lovers and speed enthusiasts. 3D wall art that captures power and performance.",
-    image: "/images/collections/automotive.jpg",
+    image: "/images/gallery/gallery-10.jpg",
     items: ["Mustang Classic", "Superbike Series", "F1 Track Silhouettes"]
   }
 ];
@@ -51,7 +51,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onNavigate }) => {
             <section className="relative py-12 md:py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-950 via-gray-950 to-black text-white overflow-hidden">
                 <div className="absolute inset-0 opacity-20 pointer-events-none z-0">
                     <OptimizedImage
-                        src="/images/hero/bg.jpg" 
+                        src="/images/trending/project-1.jpg" 
                         alt="KriaTech Studio" 
                         className="w-full h-full object-cover select-none"
                     />
