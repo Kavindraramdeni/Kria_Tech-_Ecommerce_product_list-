@@ -372,14 +372,6 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                               width={800}
                               className="w-full h-full object-cover"
                           />
-                          <button 
-                              onClick={() => setQuickViewProduct(null)}
-                              type="button"
-                              aria-label="Close product customisation"
-                              className="absolute top-3 left-3 sm:top-6 sm:left-6 bg-white/90 dark:bg-gray-900/90 p-3 rounded-2xl shadow-xl md:hidden"
-                          >
-                              <X size={20} />
-                          </button>
                       </div>
 
                       {/* Right: Info */}
@@ -399,7 +391,7 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                                   onClick={() => setQuickViewProduct(null)}
                                   type="button"
                                   aria-label="Close product customisation"
-                                  className="hidden md:flex p-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-110 transition-transform"
+                                  className="flex p-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-110 transition-transform"
                               >
                                   <X size={24} />
                               </button>
