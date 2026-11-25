@@ -1,94 +1,81 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, Sparkles, Send, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Sparkles, MessageCircle, ShieldCheck, Truck } from 'lucide-react';
 import { OptimizedImage } from '../ui/OptimizedImage';
 
-const handleScroll = (e: React.MouseEvent, href: string) => {
-    e.preventDefault();
-    const element = document.querySelector(href);
-    if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-    }
-};
-
-const slideshowImages = [
-    { src: '/images/hero/slide-1.jpg', alt: 'Magnetic Floating Frame' },
-    { src: '/images/hero/slide-2.jpg', alt: 'Artisan Neon Sign' },
-    { src: '/images/hero/slide-3.jpg', alt: 'Acrylic Wall Art' },
-    { src: '/images/hero/slide-4.jpg', alt: 'Luxury LED Decor' },
-    { src: '/images/hero/slide-5.jpg', alt: 'Signature Sculptures' },
-    { src: '/images/hero/slide-6.jpg', alt: 'Premium Finishes' },
-];
-
 interface HeroProps {
-    onNavigate: (page: string) => void;
+  onNavigate: (page: string) => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
-  return (
-    <section id="home" className="relative text-gray-900 dark:text-white overflow-hidden bg-white dark:bg-gray-950 flex flex-col transition-colors duration-300 pt-20">
-      {/* Explore Trending Slide Swiper (The Floating Belt) */}
-      <motion.div 
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        className="w-full h-44 bg-gray-50/80 dark:bg-gray-950/40 backdrop-blur-md border-b border-gray-200 dark:border-white/5 relative z-20 flex-shrink-0 transition-colors duration-300"
-      >
-        <div className="flex h-full w-full">
-          <button
-            onClick={() => onNavigate('trending')}
-            className="relative z-30 w-1/3 sm:w-1/4 lg:w-1/5 flex-shrink-0 bg-indigo-600 flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:bg-indigo-500 transition-all duration-500 group overflow-hidden -skew-x-12 -ml-6 pl-10 shadow-[8px_0_25px_rgba(0,0,0,0.3)]"
-          >
-            {/* Animated background shine */}
-            <motion.div 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-              animate={{ 
-                left: ['-100%', '200%'],
-              }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity, 
-                ease: "easeInOut",
-                repeatDelay: 1
-              }}
-            />
-            
-            <div className="skew-x-12 flex flex-col items-center justify-center text-center px-1 sm:px-2">
-              <h3 className="relative z-10 text-white text-sm sm:text-xl font-black tracking-tighter uppercase leading-none group-hover:scale-105 transition-transform duration-500">
-                Trending<br/><span className="text-indigo-200 text-[8px] sm:text-xs font-bold tracking-[0.2em]">Swaps</span>
-              </h3>
-              <span className="text-[6.5px] sm:text-[8px] text-white/90 font-black uppercase mt-1 tracking-wider leading-tight max-w-[95%]">
-                Highly Requested
-              </span>
-            </div>
-            
-            <div className="absolute bottom-2 right-2 sm:right-3 flex items-center gap-1 text-[7px] sm:text-[9px] font-black uppercase tracking-widest text-indigo-100 opacity-85 group-hover:opacity-100 transition-opacity skew-x-12">
-              Explore <ArrowRight size={10} />
-            </div>
+const highlights = [
+  { icon: ShieldCheck, label: 'Made to your brief' },
+  { icon: Sparkles, label: 'In-house fabrication' },
+  { icon: Truck, label: 'Delivery across India' },
+];
+
+export const Hero: React.FC<HeroProps> = ({ onNavigate }) => (
+  <section id="home" className="relative isolate overflow-hidden bg-[#f7f6f3] dark:bg-gray-950 pt-28 sm:pt-32 lg:pt-36">
+    <div className="pointer-events-none absolute -right-32 -top-24 h-96 w-96 rounded-full bg-indigo-200/50 blur-3xl dark:bg-indigo-900/20" />
+    <div className="pointer-events-none absolute -bottom-40 -left-20 h-96 w-96 rounded-full bg-amber-100/70 blur-3xl dark:bg-violet-900/10" />
+    <div className="container relative mx-auto grid items-center gap-10 px-4 pb-14 sm:px-6 md:pb-20 lg:grid-cols-[1.02fr_.98fr] lg:gap-14 lg:px-8 lg:pb-24">
+      <div className="max-w-2xl">
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5 }}
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white/80 px-4 py-2 text-[11px] font-bold uppercase tracking-[.16em] text-indigo-700 shadow-sm dark:border-indigo-800 dark:bg-gray-900/80 dark:text-indigo-300">
+          <Sparkles size={14} /> Custom-made. Thoughtfully crafted.
+        </motion.div>
+        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65, delay: .06 }}
+          className="max-w-2xl text-[2.8rem] font-black leading-[.98] tracking-[-.055em] text-gray-950 dark:text-white sm:text-6xl lg:text-[4.35rem]">
+          Your ideas,<br />
+          <span className="text-indigo-600 dark:text-indigo-400">made tangible.</span>
+        </motion.h1>
+        <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .14 }}
+          className="mt-6 max-w-xl text-base leading-7 text-gray-600 dark:text-gray-300 sm:text-lg sm:leading-8">
+          Personalised acrylic gifts, statement wall decor and custom business signage — designed and fabricated with care in Hyderabad.
+        </motion.p>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .22 }}
+          className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <button onClick={() => onNavigate('catalogue')}
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-indigo-600 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-300">
+            Explore the collection <ArrowRight size={17} />
           </button>
-          
-          <div className="w-2/3 sm:w-3/4 lg:w-4/5 h-full overflow-hidden relative z-10 flex items-center">
-            <div className="absolute top-0 left-0 h-full flex items-center animate-fast-scroll">
-              {[...slideshowImages, ...slideshowImages, ...slideshowImages].map((img, index) => (
-                <motion.div 
-                   key={index} 
-                   whileHover={{ scale: 1.05, y: -4 }}
-                   className="flex-shrink-0 w-28 h-28 md:w-32 md:h-32 mx-3 p-1 bg-white dark:bg-white/5 rounded-2xl shadow-sm dark:shadow-2xl border border-gray-200/60 dark:border-white/10 overflow-hidden cursor-pointer"
-                >
-                    <OptimizedImage 
-                        src={img.src} 
-                        alt={img.alt} 
-                        width={150}
-                        height={150}
-                        className="w-full h-full rounded-xl"
-                    />
-                </motion.div>
-              ))}
+          <button onClick={() => onNavigate('main')}
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white/80 px-7 py-3 text-sm font-bold text-gray-800 transition hover:border-indigo-300 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-100 dark:hover:border-indigo-500"
+            >
+            <MessageCircle size={17} /> Start a custom project
+          </button>
+        </motion.div>
+        <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 border-t border-gray-200 pt-6 dark:border-gray-800">
+          {highlights.map(({ icon: Icon, label }) => (
+            <div key={label} className="flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400">
+              <Icon size={15} className="text-indigo-600 dark:text-indigo-400" /> {label}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <motion.div initial={{ opacity: 0, y: 24, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: .75, delay: .12 }}
+        className="relative mx-auto w-full max-w-[620px]">
+        <div className="absolute -inset-3 rounded-[2rem] bg-gradient-to-br from-indigo-200/70 via-white/20 to-amber-100/70 blur-xl dark:from-indigo-900/30 dark:to-violet-900/20" />
+        <div className="relative grid grid-cols-[1.12fr_.88fr] grid-rows-2 gap-3 sm:gap-4">
+          <div className="row-span-2 overflow-hidden rounded-[1.6rem] bg-gray-200 shadow-xl shadow-gray-900/10 dark:bg-gray-800">
+            <OptimizedImage src="/images/trending/project-1.jpg" alt="Custom acrylic and wall decor creation" width={900} className="h-full min-h-[330px] w-full object-cover sm:min-h-[470px]" />
+          </div>
+          <div className="overflow-hidden rounded-[1.4rem] bg-gray-200 shadow-lg dark:bg-gray-800">
+            <OptimizedImage src="/images/gallery/gallery-3.jpg" alt="Personalised gift and photo frame" width={600} className="h-full min-h-[155px] w-full object-cover sm:min-h-[225px]" />
+          </div>
+          <div className="relative overflow-hidden rounded-[1.4rem] bg-gray-200 shadow-lg dark:bg-gray-800">
+            <OptimizedImage src="/images/led-decor/a.jpg" alt="Illuminated custom decor" width={600} className="h-full min-h-[155px] w-full object-cover sm:min-h-[225px]" />
+            <div className="absolute inset-x-3 bottom-3 rounded-xl bg-white/90 px-3 py-2 backdrop-blur dark:bg-gray-950/85">
+              <p className="text-[10px] font-bold uppercase tracking-[.15em] text-indigo-700 dark:text-indigo-300">Designed around you</p>
+              <p className="mt-0.5 text-xs font-semibold text-gray-900 dark:text-white">One idea at a time.</p>
             </div>
           </div>
         </div>
+        <div className="absolute -bottom-5 left-4 rounded-2xl border border-white/70 bg-white/95 px-4 py-3 shadow-xl dark:border-gray-700 dark:bg-gray-900/95 sm:-left-6 sm:px-5">
+          <p className="text-[10px] font-bold uppercase tracking-[.16em] text-gray-500 dark:text-gray-400">From concept to creation</p>
+          <p className="mt-1 text-sm font-black text-gray-900 dark:text-white">Custom work, made personal.</p>
+        </div>
       </motion.div>
-    </section>
-  );
-};
-
+    </div>
+  </section>
+);
