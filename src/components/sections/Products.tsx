@@ -346,11 +346,12 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
 
                 {product.allowCustomText !== false && !product.isSoldOut && (
                   <div>
-                    <label className="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <label htmlFor="product-custom-text" className="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                       <Type size={14} /> Custom Text / Message
                     </label>
-                    <input 
-                      type="text" 
+                    <input
+                      id="product-custom-text"
+                      type="text"
                       value={customText}
                       onChange={(e) => setCustomText(e.target.value)}
                       placeholder="Enter names, dates, or custom greeting"
@@ -367,10 +368,12 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-4">
                         <label className="flex-1 cursor-pointer">
-                          <input 
-                            type="file" 
-                            className="hidden" 
-                            accept="image/*"
+                          <input
+                            type="file"
+                            className="sr-only"
+                            accept="image/jpeg,image/png,image/webp"
+                            aria-label="Choose a custom product photo"
+                            aria-describedby="product-photo-help"
                             onChange={(e) => {
                               const file = e.target.files?.[0];
                               if (file) setCustomLogo(file);
@@ -382,7 +385,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                         </label>
                         <span className="text-xs text-gray-400 italic">Highly Recommended</span>
                       </div>
-                      <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+                      <p id="product-photo-help" className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
                         Your photo is selected on this device only; it is not uploaded automatically. When WhatsApp opens, attach the same photo in the chat before sending your enquiry.
                       </p>
                       {customLogo && (
