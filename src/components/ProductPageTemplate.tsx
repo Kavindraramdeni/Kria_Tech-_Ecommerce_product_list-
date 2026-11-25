@@ -211,7 +211,7 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
       {/* Back Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center pointer-events-none">
+      <div className="relative z-40 px-4 pt-24 pb-4 md:pt-28 flex justify-between items-center">
         <motion.button
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -224,7 +224,7 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
       </div>
 
       {/* Products Grid */}
-      <section className="pt-24 pb-20 md:pt-32 md:pb-32 bg-gray-50 dark:bg-gray-900/50">
+      <section className="pt-8 pb-20 md:pt-12 md:pb-32 bg-gray-50 dark:bg-gray-900/50">
         <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-6 mb-12 md:mb-16">
                 <div className="max-w-2xl">
@@ -465,12 +465,23 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                           </div>
 
                           {/* Actions */}
-                          <div className="flex flex-col sm:flex-row gap-4">
-                              <button 
-                                  onClick={() => handleWhatsAppBuy(quickViewProduct)}
-                                  className={`flex-[2] py-5 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${primaryBtnVariants[primaryColor]}`}
+                          <div className="flex flex-col sm:flex-row gap-3">
+                              <button
+                                  type="button"
+                                  onClick={() => {
+                                    handleAddToCart(quickViewProduct);
+                                    setQuickViewProduct(null);
+                                  }}
+                                  className="flex-1 py-4 rounded-2xl bg-gray-900 dark:bg-gray-700 text-white font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all hover:bg-gray-800"
                               >
-                                  <ShoppingCart size={20} /> Buy Now (WhatsApp)
+                                  <ShoppingCart size={18} /> Add to Enquiry List
+                              </button>
+                              <button
+                                  type="button"
+                                  onClick={() => handleWhatsAppBuy(quickViewProduct)}
+                                  className={`flex-[2] py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${primaryBtnVariants[primaryColor]}`}
+                              >
+                                  <MessageCircle size={18} /> WhatsApp Quote
                               </button>
                               <button 
                                   onClick={() => handleHelpWhatsApp(quickViewProduct)}
