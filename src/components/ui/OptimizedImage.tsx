@@ -24,6 +24,19 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
+  const optimizedSrc = React.useMemo(() => {
+    if (!src.includes('images.unsplash.com')) return src;
+    try {
+      const imageUrl = new URL(src);
+      imageUrl.searchParams.set('auto', 'format');
+      imageUrl.searchParams.set('fit', 'max');
+      if (width) imageUrl.searchParams.set('w', String(width));
+      return imageUrl.toString();
+    } catch {
+      return src;
+    }
+  }, [src, width]);
+
   useEffect(() => {
     setIsLoaded(false);
     setHasError(false);
@@ -46,7 +59,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       ) : (
         <motion.img
           {...props}
-          src={src}
+          src={optimizedSrc}
           alt={alt}
           width={width}
           height={height}
