@@ -1,6 +1,5 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
-import { motion } from 'motion/react';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -22,13 +21,8 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
   const content = (
     <div className="flex flex-col items-center justify-center gap-4">
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-      >
-        <Loader2 size={sizes[size]} className={color} />
-      </motion.div>
-      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 animate-pulse">Loading</span>
+      <Loader2 size={sizes[size]} className={`${color} animate-spin motion-reduce:animate-none`} aria-hidden="true" />
+      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Loading</span>
     </div>
   );
 
