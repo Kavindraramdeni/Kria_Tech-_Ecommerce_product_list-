@@ -257,15 +257,15 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                          {product.options.shapes.map((shape: any) => {
                            return (
                              <button
-                               key={shape}
-                               onClick={() => setSelectedShape(shape)}
+                               key={shape.label}
+                               onClick={() => setSelectedShape(shape.label)}
                                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 cursor-pointer ${
-                                 selectedShape === shape
+                                 selectedShape === shape.label
                                  ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg'
                                  : 'border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-indigo-200'
                                }`}
                              >
-                               {shape}
+                               {shape.label}{shape.priceModifier ? ` (+₹${Number(shape.priceModifier).toLocaleString('en-IN')})` : ''}
                              </button>
                            );
                          })}
@@ -281,15 +281,15 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                          {product.options.sizes.map((size: any) => {
                             return (
                               <button
-                                key={size}
-                                onClick={() => setSelectedSize(size)}
+                                key={size.label}
+                                onClick={() => setSelectedSize(size.label)}
                                 className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 cursor-pointer ${
-                                  selectedSize === size
+                                  selectedSize === size.label
                                   ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg'
                                   : 'border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-indigo-200'
                                 }`}
                               >
-                                {size}
+                                {size.label}{size.priceModifier ? ` (+₹${Number(size.priceModifier).toLocaleString('en-IN')})` : ''}
                               </button>
                             );
                          })}
