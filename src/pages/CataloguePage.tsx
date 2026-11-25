@@ -1,143 +1,111 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Download, ExternalLink, ArrowRight } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, Gift, Lightbulb, Puzzle, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { OptimizedImage } from '../components/ui/OptimizedImage';
 import { SEO } from '../components/shared/SEO';
 
 const categories = [
   {
-    title: "LED Wall Decor",
-    description: "Spiritual, Sports, and Artistic LED-integrated wall pieces.",
-    image: "/images/led-decor/master.jpg",
-    link: "/signature-wall-decor",
-    gallery: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"].map(char => `/images/led-decor/${char}.jpg`)
+    eyebrow: 'For homes & spaces',
+    title: 'Wall decor & LED art',
+    description: 'Make a statement with layered MDF art, illuminated pieces and custom wall installations.',
+    image: '/images/led-decor/a.jpg',
+    href: '/signature-wall-decor',
+    icon: Lightbulb,
+    tag: 'Decor',
   },
   {
-    title: "MDF Wall Arts",
-    description: "Precision-cut 3D wall decor, silhouettes, and artistic collections.",
-    image: "/images/mdf-arts/master.jpg",
-    link: "/signature-wall-decor",
-    gallery: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"].map(char => `/images/mdf-arts/${char}.jpg`)
+    eyebrow: 'For memories & moments',
+    title: 'Personalised gifts',
+    description: 'Photo frames, magnetic keepsakes and thoughtful acrylic gifts made around your memories.',
+    image: '/images/polaroids/heritage-set.jpg',
+    href: '/personalized-gifts',
+    icon: Gift,
+    tag: 'Personalise',
   },
   {
-    title: "DreamNeon Wall Arts",
-    description: "Vibrant neon designs to light up your space with modern energy and style.",
-    image: "/images/neon/master.jpg",
-    link: "/signature-wall-decor",
-    gallery: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"].map(char => `/images/neon/${char}.jpg`)
+    eyebrow: 'For brands & businesses',
+    title: 'Custom signage',
+    description: 'Acrylic lettering, display signs and branded pieces for shops, offices and events.',
+    image: '/images/led-decor/logo-sign.jpg',
+    href: '/custom-signs',
+    icon: BriefcaseBusiness,
+    tag: 'Business',
   },
   {
-    title: "Polaroid Floating Frames",
-    description: "Premium acrylic magnetic frames available in custom shapes (heart, circle, cloud) and sizes.",
-    image: "/images/polaroids/master.jpg",
-    link: "/personalized-gifts",
-    gallery: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"].map(char => `/images/polaroids/${char}.jpg`)
+    eyebrow: 'For curious young minds',
+    title: 'Kids learning',
+    description: 'Hands-on puzzles and engaging learning products designed to make discovery fun.',
+    image: '/images/kids/light-box.jpg',
+    href: '/educational-kids',
+    icon: Puzzle,
+    tag: 'Learn',
   },
 ];
 
-export const CataloguePage: React.FC = () => {
-  return (
-    <div className="pt-24 pb-24 bg-white dark:bg-gray-950 min-h-screen">
-      <SEO 
-        title="Product Catalogue" 
-        description="Browse our comprehensive catalogue of custom signs, personalized gifts, and educational kits." 
-        canonical="/catalogue"
-      />
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mb-20">
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.85] mb-8"
-          >
-            Our <br />
-            <span className="text-indigo-600">Catalogue</span>
-          </motion.h1>
-          <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
-            Explore our complete range of creative fabrication products. From commercial signage to bespoke home decor.
-          </p>
-        </div>
+export const CataloguePage: React.FC = () => (
+  <div className="min-h-screen bg-[#f7f6f3] pb-20 pt-28 dark:bg-gray-950 sm:pt-32">
+    <SEO
+      title="Custom Product Catalogue"
+      description="Explore KRIA Tech's personalised acrylic gifts, magnetic photo frames, custom signage, LED wall decor and kids learning products."
+      canonical="/catalogue"
+    />
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
+        <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-[.18em] text-indigo-700 dark:border-indigo-800 dark:bg-gray-900 dark:text-indigo-300">
+          <Sparkles size={13} /> Explore what we make
+        </span>
+        <h1 className="mt-6 text-4xl font-black tracking-[-.05em] text-gray-950 dark:text-white sm:text-6xl">
+          Made for your <span className="text-indigo-600 dark:text-indigo-400">kind of idea.</span>
+        </h1>
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-gray-600 dark:text-gray-400 sm:text-lg">
+          Browse our collections, find a starting point and tell us how you would like to make it yours.
+        </p>
+      </motion.div>
 
-        <div className="space-y-24">
-          {categories.map((cat, index) => (
-            <div key={index} className="space-y-8">
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group relative"
-              >
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tight">{cat.title}</h3>
-                    <Link to={cat.link} className="p-3 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-all">
-                      <ArrowRight size={20} />
-                    </Link>
-                  </div>
-                  <p className="text-gray-500 dark:text-gray-400 text-lg font-medium max-w-2xl">{cat.description}</p>
+      <div className="grid gap-5 sm:grid-cols-2 lg:gap-7">
+        {categories.map((category, index) => {
+          const Icon = category.icon;
+          return (
+            <motion.article
+              key={category.title}
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: .45, delay: index * .06 }}
+              className="group overflow-hidden rounded-[1.7rem] border border-gray-200/80 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900"
+            >
+              <Link to={category.href} className="grid h-full grid-cols-1 sm:grid-cols-[.92fr_1.08fr]">
+                <div className="relative min-h-56 overflow-hidden bg-gray-100 dark:bg-gray-800 sm:min-h-[310px]">
+                  <OptimizedImage src={category.image} alt={category.title} width={800} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                  <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-800 backdrop-blur dark:bg-gray-950/85 dark:text-white">{category.tag}</span>
                 </div>
-              </motion.div>
-
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-2.5 gap-y-6 sm:gap-4">
-                {cat.gallery.map((img, imgIndex) => (
-                  <motion.div
-                    key={imgIndex}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: imgIndex * 0.02 }}
-                    className="aspect-square overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-900 border border-gray-100 dark:border-gray-800"
-                  >
-                    <OptimizedImage 
-                      src={img} 
-                      alt={`${cat.title} item ${imgIndex + 1}`} 
-                      className="w-full h-full hover:scale-110 transition-transform duration-500"
-                      width={300}
-                      height={300}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <motion.div 
-          id="pdf-catalogue"
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="mt-32 p-12 md:p-20 bg-indigo-600 rounded-[3rem] text-white text-center relative overflow-hidden"
-        >
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-          </div>
-
-          <div className="relative z-10 space-y-8">
-            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">Download Full PDF</h2>
-            <p className="text-xl md:text-2xl text-indigo-100 max-w-2xl mx-auto font-medium">
-              Get our complete product catalogs with detailed specifications and pricing options.
-            </p>
-            <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center pt-8">
-              <button className="px-10 py-5 bg-black text-white font-black uppercase tracking-widest text-sm rounded-full hover:bg-gray-900 transition-all flex items-center justify-center gap-3">
-                <Download size={20} />
-                Wall Art
-              </button>
-              <button className="px-10 py-5 bg-white text-indigo-600 font-black uppercase tracking-widest text-sm rounded-full hover:bg-indigo-50 transition-all flex items-center justify-center gap-3">
-                <Download size={20} />
-                Neon Wall Art
-              </button>
-              <button className="px-10 py-5 bg-indigo-950 text-white font-black uppercase tracking-widest text-sm rounded-full hover:bg-indigo-900 transition-all flex items-center justify-center gap-3">
-                <Download size={20} />
-                Signage
-              </button>
-            </div>
-          </div>
-        </motion.div>
+                <div className="flex flex-col justify-center p-6 sm:p-7 lg:p-9">
+                  <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                    <Icon size={20} />
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-[.17em] text-indigo-600 dark:text-indigo-400">{category.eyebrow}</p>
+                  <h2 className="mt-2 text-2xl font-black tracking-tight text-gray-950 dark:text-white sm:text-3xl">{category.title}</h2>
+                  <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-400">{category.description}</p>
+                  <span className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-indigo-700 transition group-hover:gap-3 dark:text-indigo-300">
+                    Explore collection <ArrowRight size={16} />
+                  </span>
+                </div>
+              </Link>
+            </motion.article>
+          );
+        })}
       </div>
+
+      <section className="mt-12 rounded-[1.7rem] bg-gray-950 px-6 py-10 text-center text-white sm:mt-16 sm:px-12 sm:py-14 dark:bg-indigo-950">
+        <p className="text-xs font-bold uppercase tracking-[.2em] text-indigo-300">Have something different in mind?</p>
+        <h2 className="mx-auto mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Let's make a product around your idea.</h2>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-gray-300">Share a reference, size or quantity. Our team can help you work out the right material and finish.</p>
+        <Link to="/#contact" className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold text-gray-950 transition hover:bg-indigo-100">
+          Discuss a custom project <ArrowRight size={16} />
+        </Link>
+      </section>
     </div>
-  );
-};
+  </div>
+);
