@@ -292,7 +292,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
               {user && (
                 <div className="px-4 py-4 flex items-center gap-4 border-b border-gray-100 dark:border-gray-800 mb-2">
                   <OptimizedImage 
-                    src={user.photoURL || '/images/hero/slide-1.jpg'} 
+                    src={user.photoURL || '/images/gallery/gallery-1.jpg'} 
                     alt="User" 
                     className="w-12 h-12 rounded-full border-2 border-indigo-600" 
                     width={48}
