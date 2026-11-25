@@ -74,7 +74,7 @@ export const TrendingPage: React.FC<TrendingPageProps> = ({ onNavigate }) => {
                     <div className="absolute inset-0 z-0">
                         <OptimizedImage 
                           priority
-                          src="/images/trending/hero-bg.jpg" 
+                          src="/images/trending/project-1.jpg" 
                           alt="Custom interior designs" 
                           className="w-full h-full object-cover opacity-20 dark:opacity-60" 
                           width={1200}
