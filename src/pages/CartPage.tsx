@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, MessageCircle } from 'lucide-react';
 import { useECommerce } from '../context/ECommerceContext';
+import { OptimizedImage } from '../components/ui/OptimizedImage';
 
 interface CartPageProps {
   onNavigateBack: () => void;
@@ -105,7 +106,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
                     className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 group hover:shadow-xl transition-all border border-gray-100 dark:border-gray-800"
                   >
                     <div className="w-full sm:w-24 h-44 sm:h-24 rounded-xl overflow-hidden flex-shrink-0">
-                      <img src={item.imageSrc} alt={item.title} loading="lazy" decoding="async" className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.src = '/images/gallery/gallery-1.jpg'; }} />
+                      <OptimizedImage src={item.imageSrc} alt={item.title} width={240} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
