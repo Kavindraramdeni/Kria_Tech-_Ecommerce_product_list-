@@ -78,7 +78,7 @@ export const Contact: React.FC = () => {
       {/* ... previous background markup ... */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/images/about/team-collaboration.jpg" 
+          src="/images/services/personalized-gifts.jpg" 
           alt="Creative team collaborating on a project" 
           className="w-full h-full object-cover opacity-10 dark:opacity-20" 
           referrerPolicy="no-referrer"
