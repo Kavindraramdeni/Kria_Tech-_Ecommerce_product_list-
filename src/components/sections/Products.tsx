@@ -337,6 +337,9 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                         </label>
                         <span className="text-xs text-gray-400 italic">Highly Recommended</span>
                       </div>
+                      <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+                        Your photo is selected on this device only; it is not uploaded automatically. When WhatsApp opens, attach the same photo in the chat before sending your enquiry.
+                      </p>
                       {customLogo && (
                         <div className="flex items-center justify-between bg-indigo-50 dark:bg-indigo-900/20 p-2 px-3 rounded-lg border border-indigo-100 dark:border-indigo-800">
                           <div className="flex items-center gap-2 truncate">
