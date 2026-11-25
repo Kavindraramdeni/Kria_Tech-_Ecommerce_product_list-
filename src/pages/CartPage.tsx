@@ -18,23 +18,32 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
   const shipping = subtotal > 5000 ? 0 : 250;
   const total = subtotal + shipping;
 
-  const handlePlaceOrder = async () => {
-    if (!user) {
-      login();
-      return;
-    }
-    if (!address) {
-      alert("Please provide a shipping address.");
-      return;
-    }
-    await placeOrder(address);
-    
-    // WhatsApp redirect
-    const itemsList = cart.map(item => `• ${item.quantity}x ${item.title}`).join('%0A');
-    const message = `*Inquiry Confirmation - Kria Tech*%0A%0AHello! I'm interested in these creations from your website.%0A%0A*Inquiry Details:*%0A${itemsList}%0A%0A*Address:*%0A${address}%0A%0A_Please help me with details/quote!_`;
-    const whatsappUrl = `https://wa.me/919000376792?text=${message}`;
-    window.open(whatsappUrl, '_blank');
-
+  const handlePlaceOrder = () => {
+    if (cart.length === 0) return;
+    const itemsList = cart.map((item, index) => {
+      const variants = item.selectedVariants && Object.keys(item.selectedVariants).length
+        ? Object.entries(item.selectedVariants).map(([name, value]) => `${name}: ${value}`).join(', ')
+        : 'Standard options';
+      return [
+        `${index + 1}. ${item.quantity} × ${item.title}`,
+        `   Category: ${item.category || 'Custom product'}`,
+        `   Options: ${variants}`,
+        item.customText ? `   Custom text: ${item.customText}` : '',
+        `   Displayed unit price: ₹${Number(item.price || 0).toLocaleString('en-IN')}`
+      ].filter(Boolean).join('\n');
+    }).join('\n\n');
+    const message = [
+      'Hello KRIA Tech! I would like a quote for the following items from your catalogue.',
+      '',
+      'MY ENQUIRY',
+      itemsList,
+      '',
+      address.trim() ? `Delivery location: ${address.trim()}` : 'Delivery location: Please ask me for my pincode/address.',
+      '',
+      'Please confirm availability, final pricing, delivery charges and estimated dispatch time. I understand this is an enquiry, not a confirmed paid order.'
+    ].join('\n');
+    const whatsappUrl = `https://wa.me/919000376792?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     setOrderComplete(true);
     setCheckingOut(false);
   };
@@ -50,8 +59,8 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
           <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
             <ShoppingBag size={40} />
           </div>
-          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">Order Placed!</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8 font-medium">Your creative vision is now in our hands. We'll start crafting it right away.</p>
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">Enquiry Ready</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8 font-medium">Your WhatsApp enquiry has been prepared. Send the message in WhatsApp so our team can confirm availability, final pricing and delivery.</p>
           <button 
             onClick={() => onNavigate('main')} 
             className="w-full bg-indigo-600 py-4 rounded-xl text-white font-black uppercase tracking-widest hover:bg-indigo-700 transition-all"
@@ -174,20 +183,20 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
                 ) : (
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-widest">Shipping Address</label>
+                      <label className="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-widest">Delivery Location (Optional)</label>
                       <textarea 
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                         className="w-full bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-xl p-4 focus:border-indigo-600 outline-none transition-all dark:text-white"
                         rows={3}
-                        placeholder="Enter your full address"
+                        placeholder="Enter your city and pincode (full address can be shared later)"
                       />
                     </div>
                     <button 
                       onClick={handlePlaceOrder}
                       className="w-full bg-indigo-600 py-5 rounded-2xl text-white font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl flex items-center justify-center gap-3"
                     >
-                      <CreditCard size={20} /> Confirm Order
+                      <CreditCard size={20} /> Continue to WhatsApp
                     </button>
                     <button 
                       onClick={() => setCheckingOut(false)}
@@ -199,7 +208,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
                 )}
                 
                 <p className="mt-6 text-center text-xs text-gray-400 font-medium">
-                  We will contact you shortly to confirm options.
+                  Your request is not an order until KRIA Tech confirms the quote and availability.
                 </p>
               </div>
             </div>
