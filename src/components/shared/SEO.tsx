@@ -16,7 +16,7 @@ export const SEO: React.FC<SEOProps> = ({
   description,
   canonical,
   ogType = 'website',
-  ogImage = '/images/hero/bg.jpg',
+  ogImage = 'https://kria-tech-ecommerce.vercel.app/images/trending/project-1.jpg',
   keywords,
 }) => {
   const fullTitle = title ? `${title} | ${SEO_DEFAULTS.siteName}` : SEO_DEFAULTS.title;
