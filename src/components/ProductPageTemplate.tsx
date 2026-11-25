@@ -77,13 +77,23 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
     const shapeMod = product.options?.shapes?.find(s => s.label === selectedShape)?.priceModifier || 0;
     const sizeMod = product.options?.sizes?.find(s => s.label === selectedSize)?.priceModifier || 0;
     
+    const configuredPrice = (product.price || 0) + shapeMod + sizeMod;
+    const selectedVariants = {
+      ...(selectedShape ? { Shape: selectedShape } : {}),
+      ...(selectedSize ? { Size: selectedSize } : {})
+    };
+
     addToCart({
-      id: `${product.id}-${selectedShape || 'std'}-${selectedSize || 'std'}`,
-      title: `${product.title} ${selectedShape ? `(${selectedShape})` : ''} ${selectedSize ? `(${selectedSize})` : ''}`,
+      id: product.id,
+      title: product.title,
       imageSrc: product.imageSrc,
-      description: `${product.description} ${customText ? `| Custom: ${customText}` : ''}`,
-      price: (product.price || 0) + shapeMod + sizeMod,
+      price: product.price || 0,
       category: data.hero.title
+    }, {
+      title: [product.title, selectedShape, selectedSize].filter(Boolean).join(' · '),
+      price: configuredPrice,
+      selectedVariants,
+      customText: customText.trim()
     });
   };
 
