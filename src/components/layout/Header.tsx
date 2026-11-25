@@ -265,9 +265,6 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
               aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={isOpen}
               aria-controls="mobile-navigation"
-              aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              aria-expanded={isOpen}
-              aria-controls="mobile-navigation"
               className="bg-white dark:bg-gray-900 inline-flex items-center justify-center p-3 rounded-2xl text-indigo-600 dark:text-indigo-400 shadow-md focus:outline-none transition-all"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -284,8 +281,6 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            id="mobile-navigation"
-            aria-label="Mobile navigation"
             className="md:hidden bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 shadow-2xl overflow-hidden"
           >
             <div className="px-4 pt-4 pb-8 space-y-2">
