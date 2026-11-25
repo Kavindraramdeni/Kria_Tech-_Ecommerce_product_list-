@@ -5,7 +5,7 @@ export const WALL_DECOR_DATA: CategoryData = {
     title: "Signature Wall Decor",
     subtitle: "Premium 3D Art & LED Design",
     description: "These products focus on high-end interior aesthetics, using precision-cut MDF silhouettes and integrated lighting for luxury homes.",
-    image: "/images/hero/bg.jpg"
+    image: "/images/trending/project-1.jpg"
   },
   features: [
     { title: 'Precision Cut', description: 'Expertly crafted MDF silhouettes with razor-sharp precision.', icon: 'Zap' },
