@@ -49,7 +49,7 @@ export const Gallery: React.FC = () => {
       <div className="absolute inset-0">
           <OptimizedImage 
             src="/images/gallery/gallery-1.jpg" 
-            alt="Modern fabrication and design studio" 
+            alt="Acrylic LED display from the KRIA Tech gallery" 
             className="w-full h-full opacity-20 dark:opacity-10"
             width={1200}
             blur={false}
