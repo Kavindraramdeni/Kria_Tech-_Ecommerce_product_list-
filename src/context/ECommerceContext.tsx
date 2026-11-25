@@ -141,10 +141,32 @@ const ECommerceContext = createContext<ECommerceContextType | undefined>(undefin
 export const ECommerceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const savedCart = window.localStorage.getItem('kria_guest_cart');
+      return savedCart ? JSON.parse(savedCart) as CartItem[] : [];
+    } catch {
+      return [];
+    }
+  });
   const [orders, setOrders] = useState<Order[]>([]);
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  // Keep guest enquiries available when the visitor refreshes or returns later.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      if (user) {
+        window.localStorage.removeItem('kria_guest_cart');
+      } else {
+        window.localStorage.setItem('kria_guest_cart', JSON.stringify(cart));
+      }
+    } catch (error) {
+      console.warn('Unable to persist the guest enquiry list on this device:', error);
+    }
+  }, [cart, user]);
 
   // Auth listener
   useEffect(() => {
