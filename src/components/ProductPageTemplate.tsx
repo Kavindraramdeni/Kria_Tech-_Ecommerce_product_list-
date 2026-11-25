@@ -119,13 +119,27 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
     const sizeMod = product.options?.sizes?.find(s => s.label === selectedSize)?.priceModifier || 0;
     const finalPrice = (product.price || 0) + shapeMod + sizeMod;
     
-    const message = `Hello Kria Tech! I'm interested in: *${product.title}*%0A*Category:* ${data.hero.title}%0A*Shape:* ${selectedShape || 'Standard'}%0A*Size:* ${selectedSize || 'Standard'}%0A*Custom Text:* ${customText || 'None'}%0A*Estimated Price:* ₹${finalPrice}%0A%0APlease help me with the order!`;
-    window.open(`https://wa.me/919000376792?text=${message}`, '_blank');
+    const message = [
+      "Hello Kria Tech! I'm interested in:",
+      `Product: ${product.title}`,
+      `Category: ${data.hero.title}`,
+      `Shape: ${selectedShape || 'Standard'}`,
+      `Size: ${selectedSize || 'Standard'}`,
+      `Custom text: ${customText.trim() || 'None'}`,
+      `Estimated starting price: ₹${finalPrice}`,
+      "Please confirm the final quote, availability and dispatch details."
+    ].join('\n');
+    window.open(`https://wa.me/919000376792?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleHelpWhatsApp = (product: ProductItem) => {
-    const message = `Hello Kria Tech! I need help with: *${product.title}*%0A*Category:* ${data.hero.title}%0A%0ACan you provide more details?`;
-    window.open(`https://wa.me/919000376792?text=${message}`, '_blank');
+    const message = [
+      "Hello Kria Tech! I need help with this product:",
+      `Product: ${product.title}`,
+      `Category: ${data.hero.title}`,
+      "Could you please share more details?"
+    ].join('\n');
+    window.open(`https://wa.me/919000376792?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   const colorVariants: Record<string, string> = {
