@@ -121,23 +121,23 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
     }
     setCustomText('');
     setCustomLogo(null);
-    setSelectedShape('Square');
-    setSelectedSize('12x12"');
+    setSelectedShape(product?.options?.shapes?.[0]?.label || null);
+    setSelectedSize(product?.options?.sizes?.[0]?.label || null);
   }, [product]);
 
   const currentPrice = useMemo(() => {
     if (!product) return 0;
-    let price = product.price;
-    
-    if (selectedShape === 'Rectangle') price += 500;
-    if (selectedShape === 'Custom') price += 1500;
-    if (selectedSize === '24x24"') price += 2000;
+    let price = Number(product.price || 0);
+
+    const shapeOption = product.options?.shapes?.find((option: any) => option.label === selectedShape);
+    const sizeOption = product.options?.sizes?.find((option: any) => option.label === selectedSize);
+    price += Number(shapeOption?.priceModifier || 0) + Number(sizeOption?.priceModifier || 0);
 
     if (product.variants) {
       product.variants.forEach((variant: any) => {
         const selectedLabel = selectedVariants[variant.name];
-        const selectedOption = variant.options.find((o: any) => o.label === selectedLabel);
-        if (selectedOption) price += selectedOption.priceModifier;
+        const selectedOption = variant.options.find((option: any) => option.label === selectedLabel);
+        if (selectedOption) price += Number(selectedOption.priceModifier || 0);
       });
     }
     return price;
@@ -249,11 +249,12 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                 {/* Optional Customizations for Products (e.g. wall or desk) */}
                 {!product.isSoldOut && (
                   <>
-                    {/* Shape Selection */}
+                    {/* Product-specific shape options */}
+                    {product.options?.shapes?.length > 0 && (
                     <div>
                       <label className="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">Shape</label>
                       <div className="flex flex-wrap gap-2">
-                         {['Square', 'Rectangle', 'Custom'].map(shape => {
+                         {product.options.shapes.map((shape: any) => {
                            return (
                              <button
                                key={shape}
@@ -270,12 +271,14 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                          })}
                       </div>
                     </div>
+                    )}
 
-                    {/* Size Selection */}
+                    {/* Product-specific size options */}
+                    {product.options?.sizes?.length > 0 && (
                     <div>
                       <label className="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">Size</label>
                       <div className="flex flex-wrap gap-2">
-                         {['12x12"', '24x24"'].map(size => {
+                         {product.options.sizes.map((size: any) => {
                             return (
                               <button
                                 key={size}
@@ -292,6 +295,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                          })}
                       </div>
                     </div>
+                    )}
                   </>
                 )}
 
