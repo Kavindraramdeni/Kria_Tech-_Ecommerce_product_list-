@@ -5,7 +5,7 @@ export const EDUCATIONAL_DATA: CategoryData = {
     title: "KRIA KIDS",
     subtitle: "Educational & Kids Learning",
     description: "Creative learning tools, interactive light boxes, and 3D educational puzzles designed for young minds. We combine play with education to inspire the next generation.",
-    image: "/images/kids/map-puzzle.jpg"
+    image: "/images/services/kids-learning.jpg"
   },
   features: [
     { title: 'Interactive Learning', description: "Products designed to engage multiple senses and encourage hands-on exploration.", icon: 'Sparkles' },

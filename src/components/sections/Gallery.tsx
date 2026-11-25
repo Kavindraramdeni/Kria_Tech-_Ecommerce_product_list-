@@ -48,8 +48,8 @@ export const Gallery: React.FC = () => {
     <section id="gallery" className="py-12 md:py-20 bg-gray-50 dark:bg-gray-900 relative overflow-hidden transition-colors duration-300">
       <div className="absolute inset-0">
           <OptimizedImage 
-            src="/images/about/workshop-1.jpg" 
-            alt="Modern fabrication and design studio" 
+            src="/images/gallery/gallery-1.jpg" 
+            alt="Acrylic LED display from the KRIA Tech gallery" 
             className="w-full h-full opacity-20 dark:opacity-10"
             width={1200}
             blur={false}

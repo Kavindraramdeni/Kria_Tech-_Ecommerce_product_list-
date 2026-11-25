@@ -9,6 +9,8 @@ import { Header } from './components/layout/Header';
 import { Hero } from './components/sections/Hero';
 import { AboutUs } from './components/sections/AboutUs';
 import { Products } from './components/sections/Products';
+import { WhatWeDo } from './components/sections/WhatWeDo';
+import { Gallery } from './components/sections/Gallery';
 import { Contact } from './components/sections/Contact';
 import { Footer } from './components/layout/Footer';
 import { BackToTopButton } from './components/shared/BackToTopButton';
@@ -53,7 +55,9 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => (
 const MainContent = ({ onNavigate }: { onNavigate: (page: string, anchor?: string) => void }) => (
   <main className="flex flex-col gap-0">
     <Hero onNavigate={onNavigate} />
+    <WhatWeDo onNavigate={onNavigate} />
     <Products onNavigate={onNavigate} />
+    <Gallery />
     <Contact />
   </main>
 );
@@ -105,7 +109,7 @@ function AppContent() {
     trackPageView(location.pathname);
   }, [location.pathname, location.hash]);
 
-  const showMainHeader = ['/', '/trending', '/catalogue', '/about-us'].includes(location.pathname);
+  const showMainHeader = ['/', '/trending', '/catalogue', '/about-us', '/custom-signs', '/personalized-gifts', '/educational-kids', '/signature-wall-decor'].includes(location.pathname);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-900 dark:selection:text-indigo-100 transition-colors duration-300">

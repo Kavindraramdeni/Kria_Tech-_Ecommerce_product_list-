@@ -74,7 +74,7 @@ export const TrendingPage: React.FC<TrendingPageProps> = ({ onNavigate }) => {
                     <div className="absolute inset-0 z-0">
                         <OptimizedImage 
                           priority
-                          src="/images/trending/hero-bg.jpg" 
+                          src="/images/trending/project-1.jpg" 
                           alt="Custom interior designs" 
                           className="w-full h-full object-cover opacity-20 dark:opacity-60" 
                           width={1200}
@@ -166,8 +166,10 @@ export const TrendingPage: React.FC<TrendingPageProps> = ({ onNavigate }) => {
                               whileHover={{ y: -8 }}
                               className="group bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-md hover:shadow-xl overflow-hidden h-full flex flex-col border border-gray-100/80 dark:border-gray-700 transition-all duration-500"
                             >
-                                <div 
-                                  className="relative overflow-hidden aspect-[4/5] cursor-pointer"
+                                <button
+                                  type="button"
+                                  aria-label={`Preview image of ${project.title}`}
+                                  className="relative block w-full overflow-hidden aspect-[4/5] cursor-pointer text-left"
                                   onClick={() => setSelectedImage(project.imageSrc)}
                                 >
                                     <OptimizedImage 
@@ -182,7 +184,7 @@ export const TrendingPage: React.FC<TrendingPageProps> = ({ onNavigate }) => {
                                     <span className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md text-indigo-700 dark:text-indigo-400 text-[8px] sm:text-[10px] font-black uppercase tracking-widest px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-md">
                                       {project.category}
                                     </span>
-                                </div>
+                                </button>
                                 <div className="p-3.5 sm:p-6 flex flex-col flex-grow items-center text-center justify-between gap-3 sm:gap-4">
                                     <h3 className="text-xs sm:text-base md:text-lg font-black text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug uppercase tracking-tight line-clamp-2">
                                       {project.title}
@@ -261,13 +263,18 @@ export const TrendingPage: React.FC<TrendingPageProps> = ({ onNavigate }) => {
       <AnimatePresence>
         {selectedImage && (
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Project image preview"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedImage(null)}
             className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
           >
-            <button 
+            <button
+              type="button"
+              aria-label="Close image preview"
               className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors"
               onClick={() => setSelectedImage(null)}
             >

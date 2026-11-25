@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, ArrowRight, X, Camera, ShoppingCart, Check, Eye, HelpCircle, MessageCircle } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { CategoryData, ProductItem } from '../data/signs';
 import { ContactDialog } from './shared/ContactDialog';
+import { OptimizedImage } from './ui/OptimizedImage';
 import { useECommerce } from '../context/ECommerceContext';
 
 interface ProductPageTemplateProps {
@@ -30,7 +31,55 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [customText, setCustomText] = useState("");
   const [addedProducts, setAddedProducts] = useState<Record<string, boolean>>({});
+  const productDialogRef = useRef<HTMLDivElement>(null);
   const { addToCart } = useECommerce();
+
+  useEffect(() => {
+    if (!quickViewProduct) return;
+    setSelectedShape(quickViewProduct.options?.shapes?.[0]?.label || 'Standard');
+    setSelectedSize(quickViewProduct.options?.sizes?.[0]?.label || 'Standard');
+    setCustomText('');
+  }, [quickViewProduct]);
+
+  useEffect(() => {
+    if (!quickViewProduct) return;
+    const previousOverflow = document.body.style.overflow;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const dialog = productDialogRef.current;
+    const selector = 'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+    const getFocusable = () => Array.from(dialog?.querySelectorAll<HTMLElement>(selector) || []);
+    getFocusable()[0]?.focus();
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setQuickViewProduct(null);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = getFocusable();
+      if (!focusable.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [quickViewProduct]);
 
   const categories = React.useMemo(() => {
     const cats = new Set<string>();
@@ -77,13 +126,23 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
     const shapeMod = product.options?.shapes?.find(s => s.label === selectedShape)?.priceModifier || 0;
     const sizeMod = product.options?.sizes?.find(s => s.label === selectedSize)?.priceModifier || 0;
     
+    const configuredPrice = (product.price || 0) + shapeMod + sizeMod;
+    const selectedVariants = {
+      ...(selectedShape ? { Shape: selectedShape } : {}),
+      ...(selectedSize ? { Size: selectedSize } : {})
+    };
+
     addToCart({
-      id: `${product.id}-${selectedShape || 'std'}-${selectedSize || 'std'}`,
-      title: `${product.title} ${selectedShape ? `(${selectedShape})` : ''} ${selectedSize ? `(${selectedSize})` : ''}`,
+      id: product.id,
+      title: product.title,
       imageSrc: product.imageSrc,
-      description: `${product.description} ${customText ? `| Custom: ${customText}` : ''}`,
-      price: (product.price || 0) + shapeMod + sizeMod,
+      price: product.price || 0,
       category: data.hero.title
+    }, {
+      title: [product.title, selectedShape, selectedSize].filter(Boolean).join(' · '),
+      price: configuredPrice,
+      selectedVariants,
+      customText: customText.trim()
     });
   };
 
@@ -92,13 +151,27 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
     const sizeMod = product.options?.sizes?.find(s => s.label === selectedSize)?.priceModifier || 0;
     const finalPrice = (product.price || 0) + shapeMod + sizeMod;
     
-    const message = `Hello Kria Tech! I'm interested in: *${product.title}*%0A*Category:* ${data.hero.title}%0A*Shape:* ${selectedShape || 'Standard'}%0A*Size:* ${selectedSize || 'Standard'}%0A*Custom Text:* ${customText || 'None'}%0A*Estimated Price:* ₹${finalPrice}%0A%0APlease help me with the order!`;
-    window.open(`https://wa.me/919000376792?text=${message}`, '_blank');
+    const message = [
+      "Hello Kria Tech! I'm interested in:",
+      `Product: ${product.title}`,
+      `Category: ${data.hero.title}`,
+      `Shape: ${selectedShape || 'Standard'}`,
+      `Size: ${selectedSize || 'Standard'}`,
+      `Custom text: ${customText.trim() || 'None'}`,
+      `Estimated starting price: ₹${finalPrice}`,
+      "Please confirm the final quote, availability and dispatch details."
+    ].join('\n');
+    window.open(`https://wa.me/919000376792?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleHelpWhatsApp = (product: ProductItem) => {
-    const message = `Hello Kria Tech! I need help with: *${product.title}*%0A*Category:* ${data.hero.title}%0A%0ACan you provide more details?`;
-    window.open(`https://wa.me/919000376792?text=${message}`, '_blank');
+    const message = [
+      "Hello Kria Tech! I need help with this product:",
+      `Product: ${product.title}`,
+      `Category: ${data.hero.title}`,
+      "Could you please share more details?"
+    ].join('\n');
+    window.open(`https://wa.me/919000376792?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   const colorVariants: Record<string, string> = {
@@ -138,7 +211,7 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
       {/* Back Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center pointer-events-none">
+      <div className="relative z-40 px-4 pt-24 pb-4 md:pt-28 flex justify-between items-center">
         <motion.button
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -151,7 +224,7 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
       </div>
 
       {/* Products Grid */}
-      <section className="pt-24 pb-20 md:pt-32 md:pb-32 bg-gray-50 dark:bg-gray-900/50">
+      <section className="pt-8 pb-20 md:pt-12 md:pb-32 bg-gray-50 dark:bg-gray-900/50">
         <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-6 mb-12 md:mb-16">
                 <div className="max-w-2xl">
@@ -168,6 +241,7 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                             <button
                                 key={cat}
                                 onClick={() => setSelectedSubCategory(cat)}
+                                aria-pressed={selectedSubCategory === cat}
                                 className={`px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] border transition-all cursor-pointer ${
                                     selectedSubCategory === cat
                                         ? primaryColor === 'orange'
@@ -187,40 +261,34 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                 )}
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
                 {filteredProducts.map((product, index) => (
-                    <motion.div
+                    <motion.article
                         key={product.id}
                         initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: index * 0.03 }}
-                        className="group relative w-full flex flex-col items-center bg-transparent border-none shadow-none cursor-pointer text-center select-none h-full"
-                        onClick={() => setQuickViewProduct(product)}
+                        transition={{ delay: Math.min(index * 0.025, 0.2) }}
+                        className="group flex h-full w-full flex-col rounded-2xl sm:rounded-3xl border border-gray-200/80 bg-white p-2.5 sm:p-3 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900"
                     >
-                        <div className="relative w-full aspect-square overflow-hidden bg-gray-50 dark:bg-gray-950 rounded-[20px] sm:rounded-[24px]">
-                            <img 
-                                src={product.imageSrc} 
-                                alt={product.title}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
-                                referrerPolicy="no-referrer"
-                            />
-                            {product.isSoldOut && (
-                                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center p-2">
-                                    <span className="px-3 py-1.5 bg-red-600 text-white rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest shadow-lg">
-                                        Sold Out
-                                    </span>
+                        <div className="relative aspect-[4/4.4] w-full overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-950 sm:aspect-square sm:rounded-2xl">
+                            <OptimizedImage src={product.imageSrc} alt={product.title} width={600} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            {product.category && <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-indigo-700 shadow-sm backdrop-blur dark:bg-gray-950/85 dark:text-indigo-300">{product.category}</span>}
+                            {product.isSoldOut && <div className="absolute inset-0 flex items-center justify-center bg-black/55 p-2"><span className="rounded-full bg-red-600 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-white">Sold out</span></div>}
+                        </div>
+                        <div className="flex flex-1 flex-col px-1 pb-1 pt-3">
+                            <h3 className="line-clamp-2 min-h-10 text-[11px] font-extrabold leading-snug text-gray-900 transition-colors group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400 sm:text-sm">{product.title}</h3>
+                            <div className="mt-auto pt-3">
+                                <div className="mb-3 flex min-h-6 flex-wrap items-baseline gap-2">
+                                    <span className="text-sm font-black text-gray-950 dark:text-white sm:text-base">{product.pricePrefix ? product.pricePrefix + ' ' : ''}₹{Number(product.price || 0).toLocaleString('en-IN')}{product.priceSuffix ? ' ' + product.priceSuffix : ''}</span>
+                                    {product.originalPrice && product.originalPrice > (product.price || 0) && <span className="text-[10px] text-gray-400 line-through sm:text-xs">₹{Number(product.originalPrice).toLocaleString('en-IN')}</span>}
                                 </div>
-                            )}
+                                <button type="button" disabled={product.isSoldOut} onClick={() => setQuickViewProduct(product)} aria-label={product.isSoldOut ? product.title + ' is sold out' : 'Customise and enquire about ' + product.title} className="inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-indigo-600 px-2 py-2.5 text-[9px] font-black uppercase tracking-wider text-white transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 sm:text-[10px]">
+                                    {product.isSoldOut ? 'Unavailable' : 'Customise & Enquire'}
+                                </button>
+                            </div>
                         </div>
-
-                        <div className="pt-3 pb-1 px-1 sm:px-2 flex flex-col items-center flex-grow select-text">
-                            <h3 className="text-[10px] sm:text-[11px] md:text-xs font-extrabold text-gray-900 dark:text-white uppercase tracking-tight line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
-                                {product.title}
-                            </h3>
-                            {/* Price display removed */}
-                        </div>
-                    </motion.div>
+                    </motion.article>
                 ))}
             </div>
         </div>
@@ -288,29 +356,29 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                   <motion.div 
                       initial={{ scale: 0.9, opacity: 0, y: 20 }}
                       animate={{ scale: 1, opacity: 1, y: 0 }}
-                      className="relative max-w-5xl w-full max-h-[90vh] bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10"
+                      role="dialog"
+                      aria-modal="true"
+                      aria-labelledby="category-product-dialog-title"
+                      ref={productDialogRef}
+                      tabIndex={-1}
+                      className="relative max-w-5xl w-full max-h-[94dvh] sm:max-h-[90vh] bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10"
                       onClick={(e) => e.stopPropagation()}
                   >
                       {/* Left: Image */}
-                      <div className="w-full md:w-1/2 h-64 md:h-auto relative overflow-hidden bg-gray-100 dark:bg-gray-800">
-                          <img 
-                              src={quickViewProduct.imageSrc} 
-                              className="w-full h-full object-cover" 
-                              referrerPolicy="no-referrer"
+                      <div className="w-full md:w-1/2 h-48 sm:h-64 md:h-auto md:min-h-[600px] relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+                          <OptimizedImage
+                              src={quickViewProduct.imageSrc}
+                              alt={quickViewProduct.title}
+                              width={800}
+                              className="w-full h-full object-cover"
                           />
-                          <button 
-                              onClick={() => setQuickViewProduct(null)}
-                              className="absolute top-6 left-6 bg-white/90 dark:bg-gray-900/90 p-3 rounded-2xl shadow-xl md:hidden"
-                          >
-                              <X size={20} />
-                          </button>
                       </div>
 
                       {/* Right: Info */}
-                      <div className="flex-1 p-8 md:p-12 overflow-y-auto custom-scrollbar">
+                      <div className="flex-1 px-5 py-7 sm:p-8 md:p-10 overflow-y-auto custom-scrollbar">
                           <div className="flex justify-between items-start mb-6">
                               <div>
-                                  <h3 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-none mb-4">
+                                  <h3 id="category-product-dialog-title" className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-none mb-4">
                                       {quickViewProduct.title}
                                   </h3>
                                   <div className="flex flex-wrap gap-3 items-center">
@@ -321,7 +389,9 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                               </div>
                               <button 
                                   onClick={() => setQuickViewProduct(null)}
-                                  className="hidden md:flex p-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-110 transition-transform"
+                                  type="button"
+                                  aria-label="Close product customisation"
+                                  className="flex p-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-110 transition-transform"
                               >
                                   <X size={24} />
                               </button>
@@ -337,14 +407,11 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                               <div>
                                   <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Select Shape</label>
                                   <div className="flex flex-wrap gap-2">
-                                      {(quickViewProduct.options?.shapes || [
-                                          { label: 'Standard', priceModifier: 0 },
-                                          { label: 'Rectangle', priceModifier: 500 },
-                                          { label: 'Custom', priceModifier: 1500 }
-                                      ]).map(shape => (
+                                      {(quickViewProduct.options?.shapes?.length ? quickViewProduct.options.shapes : [{ label: 'Standard', priceModifier: 0 }]).map(shape => (
                                           <button
                                               key={shape.label}
                                               onClick={() => setSelectedShape(shape.label)}
+                                              aria-pressed={selectedShape === shape.label}
                                               className={`px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all border ${
                                                   selectedShape === shape.label 
                                                   ? `${bgVariants[primaryColor]} text-white border-transparent` 
@@ -361,13 +428,11 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                               <div>
                                   <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Select Size</label>
                                   <div className="flex flex-wrap gap-2">
-                                      {(quickViewProduct.options?.sizes || [
-                                          { label: 'Standard', priceModifier: 0 },
-                                          { label: 'Large', priceModifier: 2000 }
-                                      ]).map(size => (
+                                      {(quickViewProduct.options?.sizes?.length ? quickViewProduct.options.sizes : [{ label: 'Standard', priceModifier: 0 }]).map(size => (
                                           <button
                                               key={size.label}
                                               onClick={() => setSelectedSize(size.label)}
+                                              aria-pressed={selectedSize === size.label}
                                               className={`px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all border ${
                                                   selectedSize === size.label 
                                                   ? `${bgVariants[primaryColor]} text-white border-transparent` 
@@ -382,8 +447,9 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
 
                               {/* Custom Text */}
                               <div>
-                                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Custom Text / Message</label>
+                                  <label htmlFor="category-product-custom-text" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Custom Text / Message</label>
                                   <textarea
+                                      id="category-product-custom-text"
                                       value={customText}
                                       onChange={(e) => setCustomText(e.target.value)}
                                       placeholder="Enter your message here..."
@@ -393,13 +459,29 @@ export const ProductPageTemplate: React.FC<ProductPageTemplateProps> = ({
                               </div>
                           </div>
 
+                          <div className="mb-5 flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 dark:bg-gray-800">
+                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Estimated configuration price</span>
+                              <span className="text-lg font-black text-gray-950 dark:text-white">₹{Number(currentPrice).toLocaleString('en-IN')}</span>
+                          </div>
+
                           {/* Actions */}
-                          <div className="flex flex-col sm:flex-row gap-4">
-                              <button 
-                                  onClick={() => handleWhatsAppBuy(quickViewProduct)}
-                                  className={`flex-[2] py-5 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${primaryBtnVariants[primaryColor]}`}
+                          <div className="flex flex-col sm:flex-row gap-3">
+                              <button
+                                  type="button"
+                                  onClick={() => {
+                                    handleAddToCart(quickViewProduct);
+                                    setQuickViewProduct(null);
+                                  }}
+                                  className="flex-1 py-4 rounded-2xl bg-gray-900 dark:bg-gray-700 text-white font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all hover:bg-gray-800"
                               >
-                                  <ShoppingCart size={20} /> Buy Now (WhatsApp)
+                                  <ShoppingCart size={18} /> Add to Enquiry List
+                              </button>
+                              <button
+                                  type="button"
+                                  onClick={() => handleWhatsAppBuy(quickViewProduct)}
+                                  className={`flex-[2] py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all ${primaryBtnVariants[primaryColor]}`}
+                              >
+                                  <MessageCircle size={18} /> WhatsApp Quote
                               </button>
                               <button 
                                   onClick={() => handleHelpWhatsApp(quickViewProduct)}

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -17,10 +17,6 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
-  const handleCardClick = () => {
-    onQuickView(product);
-  };
-
   const getShortCategory = (cat: string) => {
     if (!cat) return "DECOR";
     const c = cat.toLowerCase();
@@ -34,12 +30,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   return (
     <motion.div 
       whileHover={{ y: -6 }}
-      onClick={handleCardClick}
-      className="group relative w-full flex flex-col bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-850 rounded-[28px] sm:rounded-[32px] p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:shadow-none transition-all duration-300 cursor-pointer select-none h-full"
+      className="group relative w-full flex flex-col bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-850 rounded-2xl sm:rounded-3xl p-2.5 sm:p-3 shadow-sm hover:shadow-xl dark:shadow-none transition-all duration-300 select-none h-full"
       id={`product-${product.id}`}
     >
       {/* Upper part: Image container */}
-      <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-950 rounded-2xl flex items-center justify-center">
+      <div className="relative w-full aspect-[4/4.4] sm:aspect-square overflow-hidden bg-gray-100 dark:bg-gray-950 rounded-xl sm:rounded-2xl flex items-center justify-center">
         {/* Fallback Camera Icon Centered */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30 group-hover:opacity-40 transition-opacity">
           <svg className="w-10 h-10 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
@@ -75,16 +70,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
 
       {/* Title & Action Section */}
       <div className="pt-3 pb-1 px-1 flex flex-col justify-between flex-grow">
-        <h3 className="text-center font-extrabold uppercase text-[12px] sm:text-[13px] md:text-sm tracking-tight text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200 line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-snug">
+        <h3 className="text-center font-extrabold uppercase text-[11px] sm:text-[13px] md:text-sm tracking-tight text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200 line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-snug">
           {product.title}
         </h3>
 
-        <div className="mt-3.5">
+        <div className="mt-3.5 space-y-2">
+          <div className="flex items-center justify-center gap-2 min-h-6">
+            <span className="text-sm sm:text-base font-black text-gray-900 dark:text-white">
+              {product.pricePrefix ? `${product.pricePrefix} ` : ''}₹{Number(product.price || 0).toLocaleString('en-IN')}{product.priceSuffix ? ` ${product.priceSuffix}` : ''}
+            </span>
+            {product.originalPrice && product.originalPrice > product.price && (
+              <span className="text-[10px] sm:text-xs text-gray-400 line-through">₹{Number(product.originalPrice).toLocaleString('en-IN')}</span>
+            )}
+          </div>
           <button
             type="button"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-black text-[10px] sm:text-xs uppercase tracking-widest py-3 px-4 rounded-2xl flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+            disabled={product.isSoldOut}
+            onClick={(event) => { event.stopPropagation(); onQuickView(product); }}
+            aria-label={product.isSoldOut ? `${product.title} is sold out` : `Customise and enquire about ${product.title}`}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-black text-[10px] sm:text-xs uppercase tracking-widest py-3 px-2 sm:px-4 rounded-2xl flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-[0.98] cursor-pointer disabled:cursor-not-allowed"
           >
-            Order Similar <MoveRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+            {product.isSoldOut ? 'Currently Unavailable' : 'Customise & Enquire'} <MoveRight size={14} />
           </button>
         </div>
       </div>
@@ -98,6 +104,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
   const [customLogo, setCustomLogo] = useState<File | null>(null);
   const [selectedShape, setSelectedShape] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   
   // Initialize attributes if available
   useEffect(() => {
@@ -110,23 +117,63 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
     }
     setCustomText('');
     setCustomLogo(null);
-    setSelectedShape('Square');
-    setSelectedSize('12x12"');
+    setSelectedShape(product?.options?.shapes?.[0]?.label || null);
+    setSelectedSize(product?.options?.sizes?.[0]?.label || null);
   }, [product]);
+
+  useEffect(() => {
+    if (!product) return;
+    const previousOverflow = document.body.style.overflow;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const modal = modalRef.current;
+    const focusableSelector = 'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+    const getFocusable = () => Array.from(modal?.querySelectorAll<HTMLElement>(focusableSelector) || []);
+    getFocusable()[0]?.focus();
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = getFocusable();
+      if (!focusable.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [product, onClose]);
 
   const currentPrice = useMemo(() => {
     if (!product) return 0;
-    let price = product.price;
-    
-    if (selectedShape === 'Rectangle') price += 500;
-    if (selectedShape === 'Custom') price += 1500;
-    if (selectedSize === '24x24"') price += 2000;
+    let price = Number(product.price || 0);
+
+    const shapeOption = product.options?.shapes?.find((option: any) => option.label === selectedShape);
+    const sizeOption = product.options?.sizes?.find((option: any) => option.label === selectedSize);
+    price += Number(shapeOption?.priceModifier || 0) + Number(sizeOption?.priceModifier || 0);
 
     if (product.variants) {
       product.variants.forEach((variant: any) => {
         const selectedLabel = selectedVariants[variant.name];
-        const selectedOption = variant.options.find((o: any) => o.label === selectedLabel);
-        if (selectedOption) price += selectedOption.priceModifier;
+        const selectedOption = variant.options.find((option: any) => option.label === selectedLabel);
+        if (selectedOption) price += Number(selectedOption.priceModifier || 0);
       });
     }
     return price;
@@ -134,14 +181,35 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
 
   const handleWhatsAppBuy = () => {
     if (!product) return;
-    const message = `Hello Kria Tech! I'm interested in: *${product.title}*%0A*Category:* ${product.category}%0A*Variants:* ${Object.entries(selectedVariants).map(([k,v]) => `${k}:${v}`).join(', ') || 'Standard'}%0A*Shape:* ${selectedShape}%0A*Size:* ${selectedSize}%0A*Custom Text:* ${customText || 'None'}%0A*Estimated Price:* ₹${currentPrice}%0A%0APlease help me with the order!`;
-    window.open(`https://wa.me/919000376792?text=${message}`, '_blank');
+    const details = [
+      'Hello KRIA Tech! I would like a quote for this product.',
+      '',
+      `Product: ${product.title}`,
+      `Category: ${product.category || 'Custom creation'}`,
+      `Selected options: ${Object.entries(selectedVariants).map(([key, value]) => `${key}: ${value}`).join(', ') || 'Standard'}`,
+      `Shape: ${selectedShape || 'To be confirmed'}`,
+      `Size: ${selectedSize || 'To be confirmed'}`,
+      `Personalisation: ${customText.trim() || 'None'}`,
+      `Displayed starting price: ₹${Number(product.price || 0).toLocaleString('en-IN')}`,
+      `Estimated configuration price: ₹${Number(currentPrice).toLocaleString('en-IN')}`,
+      `Reference photo selected: ${customLogo ? customLogo.name : 'No photo selected'}`,
+      ...(customLogo ? ['I will attach my selected photo in this WhatsApp chat before confirming.'] : []),
+      '',
+      'Please confirm the final price, production time, delivery charges and available customisation options.'
+    ];
+    const whatsappUrl = `https://wa.me/919000376792?text=${encodeURIComponent(details.join('\n'))}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
   const handleHelpWhatsApp = () => {
     if (!product) return;
-    const message = `Hello Kria Tech! I need help with: *${product.title}*%0A*Category:* ${product.category}%0A%0ACan you provide more details?`;
-    window.open(`https://wa.me/919000376792?text=${message}`, '_blank');
+    const message = [
+      'Hello KRIA Tech! I have a question about this product:',
+      `Product: ${product.title}`,
+      `Category: ${product.category || 'Custom creation'}`,
+      'Please share details, customisation options and a final quote.'
+    ].join('\n');
+    window.open(`https://wa.me/919000376792?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   return createPortal(
@@ -159,10 +227,14 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
             initial={{ scale: 0.9, y: 20, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 20, opacity: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden max-w-5xl w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row relative z-[1001] max-h-[90vh]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="product-dialog-title"
+            ref={modalRef}
+            className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden max-w-5xl w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row relative z-[1001] max-h-[94dvh] sm:max-h-[90vh] rounded-2xl sm:rounded-[2rem]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="lg:w-1/2 h-64 lg:h-auto relative bg-gray-100 dark:bg-gray-800 select-none">
+            <div className="lg:w-1/2 h-48 sm:h-64 lg:h-auto lg:min-h-[620px] relative bg-gray-100 dark:bg-gray-800 select-none">
               <OptimizedImage src={product.imageSrc} alt={product.title} className="w-full h-full object-cover" width={800} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               {product.isSoldOut && (
@@ -174,15 +246,17 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
               )}
             </div>
             
-            <div className="lg:w-1/2 p-8 lg:p-12 overflow-y-auto custom-scrollbar">
+            <div className="lg:w-1/2 px-5 py-7 sm:p-8 lg:p-10 overflow-y-auto custom-scrollbar">
               <button 
-                onClick={onClose} 
-                className="absolute top-6 right-6 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all z-20 cursor-pointer"
+                onClick={onClose}
+                type="button"
+                aria-label="Close product customisation"
+                className="absolute top-3 right-3 sm:top-6 sm:right-6 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all z-20 cursor-pointer"
               >
                 <X size={24} />
               </button>
               
-              <h2 className="text-2xl lg:text-3.5xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tighter leading-none">{product.title}</h2>
+              <h2 id="product-dialog-title" className="text-2xl lg:text-3.5xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tighter leading-none">{product.title}</h2>
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg text-[10px] font-black uppercase tracking-widest">{product.category}</span>
               </div>
@@ -201,6 +275,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                            key={option.label}
                            disabled={product.isSoldOut}
                            onClick={() => setSelectedVariants(prev => ({ ...prev, [variant.name]: option.label }))}
+                           aria-pressed={selectedVariants[variant.name] === option.label}
                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 cursor-pointer ${
                              selectedVariants[variant.name] === option.label
                              ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg'
@@ -217,59 +292,66 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                 {/* Optional Customizations for Products (e.g. wall or desk) */}
                 {!product.isSoldOut && (
                   <>
-                    {/* Shape Selection */}
+                    {/* Product-specific shape options */}
+                    {product.options?.shapes?.length > 0 && (
                     <div>
                       <label className="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">Shape</label>
                       <div className="flex flex-wrap gap-2">
-                         {['Square', 'Rectangle', 'Custom'].map(shape => {
+                         {product.options.shapes.map((shape: any) => {
                            return (
                              <button
-                               key={shape}
-                               onClick={() => setSelectedShape(shape)}
+                               key={shape.label}
+                               onClick={() => setSelectedShape(shape.label)}
+                               aria-pressed={selectedShape === shape.label}
                                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 cursor-pointer ${
-                                 selectedShape === shape
+                                 selectedShape === shape.label
                                  ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg'
                                  : 'border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-indigo-200'
                                }`}
                              >
-                               {shape}
+                               {shape.label}{shape.priceModifier ? ` (+₹${Number(shape.priceModifier).toLocaleString('en-IN')})` : ''}
                              </button>
                            );
                          })}
                       </div>
                     </div>
+                    )}
 
-                    {/* Size Selection */}
+                    {/* Product-specific size options */}
+                    {product.options?.sizes?.length > 0 && (
                     <div>
                       <label className="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">Size</label>
                       <div className="flex flex-wrap gap-2">
-                         {['12x12"', '24x24"'].map(size => {
+                         {product.options.sizes.map((size: any) => {
                             return (
                               <button
-                                key={size}
-                                onClick={() => setSelectedSize(size)}
+                                key={size.label}
+                                onClick={() => setSelectedSize(size.label)}
+                                aria-pressed={selectedSize === size.label}
                                 className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 cursor-pointer ${
-                                  selectedSize === size
+                                  selectedSize === size.label
                                   ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg'
                                   : 'border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-indigo-200'
                                 }`}
                               >
-                                {size}
+                                {size.label}{size.priceModifier ? ` (+₹${Number(size.priceModifier).toLocaleString('en-IN')})` : ''}
                               </button>
                             );
                          })}
                       </div>
                     </div>
+                    )}
                   </>
                 )}
 
                 {product.allowCustomText !== false && !product.isSoldOut && (
                   <div>
-                    <label className="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <label htmlFor="product-custom-text" className="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                       <Type size={14} /> Custom Text / Message
                     </label>
-                    <input 
-                      type="text" 
+                    <input
+                      id="product-custom-text"
+                      type="text"
                       value={customText}
                       onChange={(e) => setCustomText(e.target.value)}
                       placeholder="Enter names, dates, or custom greeting"
@@ -286,10 +368,12 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-4">
                         <label className="flex-1 cursor-pointer">
-                          <input 
-                            type="file" 
-                            className="hidden" 
-                            accept="image/*"
+                          <input
+                            type="file"
+                            className="sr-only"
+                            accept="image/jpeg,image/png,image/webp"
+                            aria-label="Choose a custom product photo"
+                            aria-describedby="product-photo-help"
                             onChange={(e) => {
                               const file = e.target.files?.[0];
                               if (file) setCustomLogo(file);
@@ -301,6 +385,9 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
                         </label>
                         <span className="text-xs text-gray-400 italic">Highly Recommended</span>
                       </div>
+                      <p id="product-photo-help" className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+                        Your photo is selected on this device only; it is not uploaded automatically. When WhatsApp opens, attach the same photo in the chat before sending your enquiry.
+                      </p>
                       {customLogo && (
                         <div className="flex items-center justify-between bg-indigo-50 dark:bg-indigo-900/20 p-2 px-3 rounded-lg border border-indigo-100 dark:border-indigo-800">
                           <div className="flex items-center gap-2 truncate">
@@ -426,7 +513,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
     },
     { 
       label: "Key Chains", 
-      imageSrc: "/images/mdf-arts/nature-trio.jpg", 
+      imageSrc: "/images/gallery/gallery-4.jpg", 
       targetId: "modular-fashion" 
     },
     { 
@@ -491,14 +578,14 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
   const searchResults = useMemo(() => {
     if (!searchQuery) return [];
     const normalizedQuery = searchQuery.toLowerCase();
-    return productsDatabase.filter(product => {
+    return filteredProducts.filter(product => {
       return (
         product.title.toLowerCase().includes(normalizedQuery) ||
-        product.category.toLowerCase().includes(normalizedQuery) ||
+        (product.category || '').toLowerCase().includes(normalizedQuery) ||
         product.description?.toLowerCase().includes(normalizedQuery)
       );
     });
-  }, [searchQuery, productsDatabase]);
+  }, [searchQuery, filteredProducts]);
 
   const handlePopularClick = (id: string) => {
     // If it's the specific target IDs, we can scroll down nicely
@@ -556,6 +643,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
+                  aria-pressed={activeCategory === cat.id}
                   className={`px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300 cursor-pointer ${
                     activeCategory === cat.id
                       ? 'bg-indigo-600 text-white shadow-[0_4px_12px_rgba(79,70,229,0.25)]'
@@ -570,14 +658,15 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
         </div>
 
         {/* 1. Search Bar */}
-        <div className="max-w-3xl mx-auto mb-12 relative group px-2 sm:px-0">
+        <div className="max-w-3xl mx-auto mb-8 sm:mb-12 relative group px-0 sm:px-0">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
           <input 
             type="text" 
             placeholder="Search for Love Story Frames, Baby Born Acrylics, Lamps..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-gray-50 dark:bg-gray-900/40 border border-gray-150 dark:border-gray-800 focus:border-indigo-600 rounded-full py-4 sm:py-4.5 pl-14 sm:pl-16 pr-8 outline-none transition-all dark:text-white text-sm sm:text-base font-bold shadow-sm hover:shadow-md"
+            aria-label="Search products"
+            className="w-full bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-950 rounded-2xl py-4 pl-12 pr-12 outline-none transition-all dark:text-white text-sm sm:text-base font-medium shadow-sm"
           />
           {searchQuery && (
             <button 
@@ -598,7 +687,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
             </div>
             
             {searchResults.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
                 {searchResults.map((product) => (
                   <motion.div 
                     key={product.id}
@@ -627,7 +716,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
         ) : activeCategory !== 'all' ? (
           <div className="space-y-8 animate-fade-in">
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {filteredProducts.map((product) => (
                   <motion.div 
                     key={product.id}
@@ -669,7 +758,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
               </div>
 
               {/* 3-Column highlight Grid */}
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {newInProducts.map((product) => (
                   <motion.div
                     key={product.id}
@@ -695,7 +784,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
                 <span className="h-1.5 w-1.5 bg-indigo-600 rounded-full"></span>
               </div>
               
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {wallDecorativesProducts.map((product) => (
                   <motion.div 
                     key={product.id}
@@ -720,7 +809,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
                 <span className="h-1.5 w-1.5 bg-indigo-600 rounded-full"></span>
               </div>
               
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {deskDecorativesProducts.map((product) => (
                   <motion.div 
                     key={product.id}
@@ -745,7 +834,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
                 <span className="h-1.5 w-1.5 bg-indigo-600 rounded-full"></span>
               </div>
               
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
                 {accessoriesFashionProducts.map((product) => (
                   <motion.div 
                     key={product.id}

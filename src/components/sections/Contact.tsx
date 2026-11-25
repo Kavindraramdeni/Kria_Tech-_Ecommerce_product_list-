@@ -78,8 +78,8 @@ export const Contact: React.FC = () => {
       {/* ... previous background markup ... */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/images/about/team-collaboration.jpg" 
-          alt="Creative team collaborating on a project" 
+          src="/images/services/personalized-gifts.jpg" 
+          alt="Personalised gifts and custom photo products from KRIA Tech" 
           className="w-full h-full object-cover opacity-10 dark:opacity-20" 
           referrerPolicy="no-referrer"
         />

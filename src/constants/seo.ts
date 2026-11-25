@@ -1,8 +1,8 @@
 export const SEO_DEFAULTS = {
-  title: 'Kria Tech | Custom Creations & Promotional Signage',
-  description: 'Premium custom acrylic products, LED signage, wall art, and personalized gifts in India. We bring your creative visions to life with high-quality fabrication.',
-  url: 'https://kria-tech.example.com',
-  siteName: 'Kria Tech',
+  title: 'KRIA Tech | Magnetic Acrylic Photo Frames, Custom Gifts & Signage',
+  description: 'Discover magnetic acrylic photo frames, personalised gifts, LED wall decor and custom business signage from KRIA Tech in Hyderabad, Telangana. Share your idea and request a custom quote.',
+  url: 'https://kria-tech-ecommerce.vercel.app',
+  siteName: 'KRIA Tech',
   twitterHandle: '@kriatech',
-  keywords: 'acrylic signs, LED signage, custom gift box, wall art, promotional display, Kria Tech India',
+  keywords: 'magnetic acrylic photo frames Hyderabad, acrylic photo frames Telangana, custom acrylic gifts Hyderabad, personalised photo frames, LED signage Hyderabad, acrylic business signs, KRIA Tech',
 };
