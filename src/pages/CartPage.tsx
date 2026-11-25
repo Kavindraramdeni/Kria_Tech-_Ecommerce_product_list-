@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, CreditCard } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, MessageCircle } from 'lucide-react';
 import { useECommerce } from '../context/ECommerceContext';
 
 interface CartPageProps {
@@ -9,7 +9,7 @@ interface CartPageProps {
 }
 
 export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }) => {
-  const { cart, updateCartQuantity, removeFromCart, placeOrder, user, login } = useECommerce();
+  const { cart, updateCartQuantity, removeFromCart } = useECommerce();
   const [address, setAddress] = useState('');
   const [checkingOut, setCheckingOut] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
@@ -196,7 +196,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
                       onClick={handlePlaceOrder}
                       className="w-full bg-indigo-600 py-5 rounded-2xl text-white font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl flex items-center justify-center gap-3"
                     >
-                      <CreditCard size={20} /> Continue to WhatsApp
+                      <MessageCircle size={20} /> Continue to WhatsApp
                     </button>
                     <button 
                       onClick={() => setCheckingOut(false)}
