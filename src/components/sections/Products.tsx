@@ -120,6 +120,20 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
     setSelectedSize(product?.options?.sizes?.[0]?.label || null);
   }, [product]);
 
+  useEffect(() => {
+    if (!product) return;
+    const previousOverflow = document.body.style.overflow;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [product, onClose]);
+
   const currentPrice = useMemo(() => {
     if (!product) return 0;
     let price = Number(product.price || 0);
@@ -186,6 +200,9 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
             initial={{ scale: 0.9, y: 20, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 20, opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="product-dialog-title"
             className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden max-w-5xl w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row relative z-[1001] max-h-[94dvh] sm:max-h-[90vh] rounded-2xl sm:rounded-[2rem]"
             onClick={(e) => e.stopPropagation()}
           >
@@ -203,13 +220,15 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
             
             <div className="lg:w-1/2 px-5 py-7 sm:p-8 lg:p-10 overflow-y-auto custom-scrollbar">
               <button 
-                onClick={onClose} 
-                className="absolute top-6 right-6 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all z-20 cursor-pointer"
+                onClick={onClose}
+                type="button"
+                aria-label="Close product customisation"
+                className="absolute top-3 right-3 sm:top-6 sm:right-6 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all z-20 cursor-pointer"
               >
                 <X size={24} />
               </button>
               
-              <h2 className="text-2xl lg:text-3.5xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tighter leading-none">{product.title}</h2>
+              <h2 id="product-dialog-title" className="text-2xl lg:text-3.5xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tighter leading-none">{product.title}</h2>
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg text-[10px] font-black uppercase tracking-widest">{product.category}</span>
               </div>
@@ -528,7 +547,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
     return filteredProducts.filter(product => {
       return (
         product.title.toLowerCase().includes(normalizedQuery) ||
-        product.category.toLowerCase().includes(normalizedQuery) ||
+        (product.category || '').toLowerCase().includes(normalizedQuery) ||
         product.description?.toLowerCase().includes(normalizedQuery)
       );
     });
