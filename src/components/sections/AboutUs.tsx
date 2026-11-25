@@ -6,9 +6,9 @@ import { Gallery } from './Gallery';
 import { WhatWeDo } from './WhatWeDo';
 
 const images = [
-    { src: '/images/gallery/gallery-1.jpg', alt: 'Warehouse with materials and equipment' },
-    { src: '/images/led-decor/commercial-box.jpg', alt: 'CO2 Laser cutting machine in action' },
-    { src: '/images/services/personalized-gifts.jpg', alt: 'Behind the scenes setup of a creative project' }
+    { src: '/images/gallery/gallery-1.jpg', alt: 'Custom acrylic LED display from the KRIA Tech product gallery' },
+    { src: '/images/led-decor/commercial-box.jpg', alt: 'Custom illuminated acrylic signage created by KRIA Tech' },
+    { src: '/images/services/personalized-gifts.jpg', alt: 'Personalised gifts and photo products from KRIA Tech' }
 ];
 
 const collections = [
