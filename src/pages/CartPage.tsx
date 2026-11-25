@@ -14,10 +14,6 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
   const [checkingOut, setCheckingOut] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
 
-  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shipping = subtotal > 5000 ? 0 : 250;
-  const total = subtotal + shipping;
-
   const handlePlaceOrder = () => {
     if (cart.length === 0) return;
     const itemsList = cart.map((item, index) => {
