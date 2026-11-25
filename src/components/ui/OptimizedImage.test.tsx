@@ -19,6 +19,12 @@ describe('OptimizedImage Component', () => {
     expect(img).toHaveAttribute('src', expect.stringContaining('w=500'));
   });
 
+  it('shows an accessible fallback when an image fails', () => {
+    render(<OptimizedImage src="broken.jpg" alt="Broken product" />);
+    fireEvent.error(screen.getByRole('img'));
+    expect(screen.getByRole('img', { name: 'Broken product image unavailable' })).toBeInTheDocument();
+  });
+
   it('handles load state', () => {
     render(<OptimizedImage src="test.jpg" alt="Test" />);
     const img = screen.getByRole('img');
