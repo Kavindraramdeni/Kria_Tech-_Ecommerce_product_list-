@@ -144,7 +144,8 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
                       <span className="w-8 text-center font-bold dark:text-white">{item.quantity}</span>
                       <button 
                         onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
-                        className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-500 transition-all"
+                        aria-label={`Increase quantity of ${item.title}`}
+                        className="p-3 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-500 transition-all"
                       >
                         <Plus size={16} />
                       </button>
@@ -181,11 +182,12 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
                 ) : (
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-widest">Delivery Location (Optional)</label>
-                      <textarea 
+                      <label htmlFor="delivery-location" className="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-widest">Delivery Location (Optional)</label>
+                      <textarea
+                        id="delivery-location"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        className="w-full bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-xl p-4 focus:border-indigo-600 outline-none transition-all dark:text-white"
+                        className="w-full bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-xl p-4 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-950 outline-none transition-all dark:text-white"
                         rows={3}
                         placeholder="Enter your city and pincode (full address can be shared later)"
                       />
