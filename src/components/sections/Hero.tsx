@@ -4,7 +4,7 @@ import { ArrowRight, Sparkles, MessageCircle, ShieldCheck, Truck } from 'lucide-
 import { OptimizedImage } from '../ui/OptimizedImage';
 
 interface HeroProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, anchor?: string) => void;
 }
 
 const highlights = [
@@ -38,7 +38,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => (
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-indigo-600 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-300">
             Explore the collection <ArrowRight size={17} />
           </button>
-          <button onClick={() => onNavigate('main')}
+          <button onClick={() => onNavigate('main', '#contact')}
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white/80 px-7 py-3 text-sm font-bold text-gray-800 transition hover:border-indigo-300 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-100 dark:hover:border-indigo-500"
             >
             <MessageCircle size={17} /> Start a custom project
