@@ -185,7 +185,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
                   aria-label="Toggle user menu"
                 >
                   <OptimizedImage 
-                    src={user.photoURL || '/images/hero/slide-1.jpg'} 
+                    src={user.photoURL || '/images/gallery/gallery-1.jpg'} 
                     alt={user.displayName || 'User'} 
                     className="w-full h-full" 
                     width={40}
@@ -248,7 +248,8 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
                 <Home size={24} />
             </button>
             <button
-               onClick={() => onNavigate('cart')}
+               onClick={() => { onNavigate('cart'); setIsOpen(false); }}
+               aria-label={`Open enquiry cart with ${cartCount} items`}
                className="relative p-2 text-indigo-600 dark:text-indigo-400"
             >
                 <ShoppingCart size={24} />
@@ -261,6 +262,9 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
+              aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
               className="bg-white dark:bg-gray-900 inline-flex items-center justify-center p-3 rounded-2xl text-indigo-600 dark:text-indigo-400 shadow-md focus:outline-none transition-all"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -275,6 +279,8 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
+            id="mobile-navigation"
+            aria-label="Mobile navigation"
             className="md:hidden bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 shadow-2xl overflow-hidden"
           >
             <div className="px-4 pt-4 pb-8 space-y-2">
@@ -332,7 +338,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: NAV_LINKS.length * 0.05 }}
-                    onClick={login} 
+                    onClick={() => { login(); setIsOpen(false); }} 
                     className="mt-6 w-full text-center px-6 py-5 rounded-2xl text-lg font-black text-white bg-indigo-600 hover:bg-indigo-700 shadow-xl flex items-center justify-center gap-3"
                 >
                     <User size={22} />
