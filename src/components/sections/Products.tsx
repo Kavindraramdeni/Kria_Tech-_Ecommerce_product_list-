@@ -17,10 +17,6 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
-  const handleCardClick = () => {
-    onQuickView(product);
-  };
-
   const getShortCategory = (cat: string) => {
     if (!cat) return "DECOR";
     const c = cat.toLowerCase();
@@ -34,12 +30,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   return (
     <motion.div 
       whileHover={{ y: -6 }}
-      onClick={handleCardClick}
-      className="group relative w-full flex flex-col bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-850 rounded-[28px] sm:rounded-[32px] p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:shadow-none transition-all duration-300 cursor-pointer select-none h-full"
+      className="group relative w-full flex flex-col bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-850 rounded-2xl sm:rounded-3xl p-2.5 sm:p-3 shadow-sm hover:shadow-xl dark:shadow-none transition-all duration-300 select-none h-full"
       id={`product-${product.id}`}
     >
       {/* Upper part: Image container */}
-      <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-950 rounded-2xl flex items-center justify-center">
+      <div className="relative w-full aspect-[4/4.4] sm:aspect-square overflow-hidden bg-gray-100 dark:bg-gray-950 rounded-xl sm:rounded-2xl flex items-center justify-center">
         {/* Fallback Camera Icon Centered */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30 group-hover:opacity-40 transition-opacity">
           <svg className="w-10 h-10 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
@@ -75,7 +70,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
 
       {/* Title & Action Section */}
       <div className="pt-3 pb-1 px-1 flex flex-col justify-between flex-grow">
-        <h3 className="text-center font-extrabold uppercase text-[12px] sm:text-[13px] md:text-sm tracking-tight text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200 line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-snug">
+        <h3 className="text-center font-extrabold uppercase text-[11px] sm:text-[13px] md:text-sm tracking-tight text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200 line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-snug">
           {product.title}
         </h3>
 
@@ -191,10 +186,10 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
             initial={{ scale: 0.9, y: 20, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 20, opacity: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden max-w-5xl w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row relative z-[1001] max-h-[90vh]"
+            className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden max-w-5xl w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row relative z-[1001] max-h-[94dvh] sm:max-h-[90vh] rounded-2xl sm:rounded-[2rem]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="lg:w-1/2 h-64 lg:h-auto relative bg-gray-100 dark:bg-gray-800 select-none">
+            <div className="lg:w-1/2 h-48 sm:h-64 lg:h-auto lg:min-h-[620px] relative bg-gray-100 dark:bg-gray-800 select-none">
               <OptimizedImage src={product.imageSrc} alt={product.title} className="w-full h-full object-cover" width={800} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               {product.isSoldOut && (
@@ -206,7 +201,7 @@ const QuickViewModal: React.FC<{ product: any | null; onClose: () => void }> = (
               )}
             </div>
             
-            <div className="lg:w-1/2 p-8 lg:p-12 overflow-y-auto custom-scrollbar">
+            <div className="lg:w-1/2 px-5 py-7 sm:p-8 lg:p-10 overflow-y-auto custom-scrollbar">
               <button 
                 onClick={onClose} 
                 className="absolute top-6 right-6 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all z-20 cursor-pointer"
@@ -530,14 +525,14 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
   const searchResults = useMemo(() => {
     if (!searchQuery) return [];
     const normalizedQuery = searchQuery.toLowerCase();
-    return productsDatabase.filter(product => {
+    return filteredProducts.filter(product => {
       return (
         product.title.toLowerCase().includes(normalizedQuery) ||
         product.category.toLowerCase().includes(normalizedQuery) ||
         product.description?.toLowerCase().includes(normalizedQuery)
       );
     });
-  }, [searchQuery, productsDatabase]);
+  }, [searchQuery, filteredProducts]);
 
   const handlePopularClick = (id: string) => {
     // If it's the specific target IDs, we can scroll down nicely
@@ -595,6 +590,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
+                  aria-pressed={activeCategory === cat.id}
                   className={`px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300 cursor-pointer ${
                     activeCategory === cat.id
                       ? 'bg-indigo-600 text-white shadow-[0_4px_12px_rgba(79,70,229,0.25)]'
@@ -609,14 +605,15 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
         </div>
 
         {/* 1. Search Bar */}
-        <div className="max-w-3xl mx-auto mb-12 relative group px-2 sm:px-0">
+        <div className="max-w-3xl mx-auto mb-8 sm:mb-12 relative group px-0 sm:px-0">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
           <input 
             type="text" 
             placeholder="Search for Love Story Frames, Baby Born Acrylics, Lamps..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-gray-50 dark:bg-gray-900/40 border border-gray-150 dark:border-gray-800 focus:border-indigo-600 rounded-full py-4 sm:py-4.5 pl-14 sm:pl-16 pr-8 outline-none transition-all dark:text-white text-sm sm:text-base font-bold shadow-sm hover:shadow-md"
+            aria-label="Search products"
+            className="w-full bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-950 rounded-2xl py-4 pl-12 pr-12 outline-none transition-all dark:text-white text-sm sm:text-base font-medium shadow-sm"
           />
           {searchQuery && (
             <button 
@@ -637,7 +634,7 @@ export const Products: React.FC<ProductsProps> = ({ onNavigate }) => {
             </div>
             
             {searchResults.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-2.5 gap-y-6 sm:gap-6 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
                 {searchResults.map((product) => (
                   <motion.div 
                     key={product.id}
