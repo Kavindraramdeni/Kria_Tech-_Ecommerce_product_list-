@@ -7,13 +7,13 @@ const services = [
   {
     title: 'Signature Wall Decor',
     description: 'Premium 3D MDF wall art, high-end magnetic frames, and bespoke neon creations designed for luxury interiors.',
-    imageSrc: '/images/services/signature-decor.jpg',
+    imageSrc: '/images/trending/project-1.jpg',
     pageKey: 'signature-wall-decor',
   },
   {
     title: 'Commercial Signage',
     description: 'Expert branding solutions including acrylic sign boxes, 3D lettering, and professional business displays.',
-    imageSrc: '/images/services/commercial-signage.jpg',
+    imageSrc: '/images/led-decor/commercial-box.jpg',
     pageKey: 'custom-signs',
   },
   {
