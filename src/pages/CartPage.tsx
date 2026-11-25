@@ -50,7 +50,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white dark:bg-gray-900 p-12 rounded-3xl shadow-2xl text-center max-w-lg mx-4"
+          className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-3xl shadow-2xl text-center max-w-lg mx-4"
         >
           <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
             <ShoppingBag size={40} />
@@ -78,10 +78,10 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
           <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" /> Back to Store
         </button>
 
-        <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-12 uppercase tracking-tighter">Your <span className="text-indigo-600">Inquiry List</span></h1>
+        <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-8 sm:mb-12 uppercase tracking-tighter">Your <span className="text-indigo-600">Inquiry List</span></h1>
 
         {cart.length === 0 ? (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-20 text-center shadow-xl">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 sm:p-14 lg:p-20 text-center shadow-xl">
             <ShoppingBag size={64} className="mx-auto mb-6 text-gray-200 dark:text-gray-800" />
             <h2 className="text-2xl font-bold text-gray-400 mb-8">Your cart is as empty as an unpainted wall.</h2>
             <button 
@@ -92,7 +92,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
             <div className="lg:col-span-2 space-y-6">
               <AnimatePresence>
                 {cart.map((item) => (
@@ -102,10 +102,10 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -50 }}
-                    className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-md flex items-center gap-6 group hover:shadow-xl transition-all border border-gray-100 dark:border-gray-800"
+                    className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 group hover:shadow-xl transition-all border border-gray-100 dark:border-gray-800"
                   >
-                    <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
-                      <img src={item.imageSrc} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    <div className="w-full sm:w-24 h-44 sm:h-24 rounded-xl overflow-hidden flex-shrink-0">
+                      <img src={item.imageSrc} alt={item.title} loading="lazy" decoding="async" className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.src = '/images/gallery/gallery-1.jpg'; }} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -133,10 +133,11 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
 
                       {/* Price display removed */}
                     </div>
-                    <div className="flex items-center gap-3 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+                    <div className="flex items-center justify-between sm:justify-start gap-3 bg-gray-100 dark:bg-gray-800 rounded-xl p-1 w-full sm:w-auto sm:ml-auto">
                       <button 
                         onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
-                        className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-500 transition-all"
+                        aria-label={`Decrease quantity of ${item.title}`}
+                        className="p-3 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-500 transition-all"
                       >
                         <Minus size={16} />
                       </button>
@@ -150,7 +151,8 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
                     </div>
                     <button 
                       onClick={() => removeFromCart(item.id)}
-                      className="p-3 text-gray-300 hover:text-red-500 transition-colors"
+                      aria-label={`Remove ${item.title} from enquiry list`}
+                      className="p-3 text-gray-400 hover:text-red-500 transition-colors self-end sm:self-auto"
                     >
                       <Trash2 size={20} />
                     </button>
@@ -160,7 +162,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigateBack, onNavigate }
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-xl border border-gray-100 dark:border-gray-800 sticky top-32">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-100 dark:border-gray-800 lg:sticky lg:top-32">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 uppercase tracking-tighter">Inquiry Summary</h3>
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between text-gray-600 dark:text-gray-400 font-semibold">
