@@ -53,6 +53,7 @@ describe('ECommerceContext', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
   });
 
   it('adds item to cart correctly (unauthenticated)', async () => {
@@ -72,6 +73,28 @@ describe('ECommerceContext', () => {
 
     expect(result.current.cart.length).toBe(1);
     expect(result.current.cart[0].title).toBe('Test Product');
+  });
+
+  it('persists the guest enquiry cart across refreshes', async () => {
+    (onAuthStateChanged as any).mockImplementationOnce((auth, cb) => {
+      cb(null);
+      return vi.fn();
+    });
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <ECommerceProvider>{children}</ECommerceProvider>
+    );
+    const { result } = renderHook(() => useECommerce(), { wrapper });
+
+    await act(async () => {
+      await result.current.addToCart(mockProduct);
+    });
+
+    await waitFor(() => {
+      const savedCart = JSON.parse(localStorage.getItem('kria_guest_cart') || '[]');
+      expect(savedCart).toHaveLength(1);
+      expect(savedCart[0].title).toBe('Test Product');
+    });
   });
 
   it('syncs with firestore when authenticated', async () => {
